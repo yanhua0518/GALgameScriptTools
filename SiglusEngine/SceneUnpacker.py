@@ -51,6 +51,7 @@ class Header:
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
 def Decrypt1(string):
+    #Change this key to your game's key.
     key=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
          0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
     newString=b''
@@ -96,10 +97,11 @@ def Decrypt2(string):
         newString+=bytes([string[n]^key[n&255]])
     return newString
 
+'''
 def Decompress(string,size):
     count=0
     p=0
-    print("Decompressing")
+    #print("Decompressing")
     forDecomp=BytesIO(string)
     output=BytesIO(bytearray(size))
     while output.tell()<size:
@@ -122,15 +124,50 @@ def Decompress(string,size):
                     tempLen-=1
             s-=1
             char>>=1
-        if int(count/(size/100))>p:
-            p+=1
-            print("%.2d"%p)
+        if int(count/(size/10))>p:
+            p=int(count/(size/10))
+            print((p*10)+"%")
     newString=output.getvalue()
     forDecomp.close()
     output.close()
-    print('OK!')
     return newString
+'''
 
+def Decompress(string,size):
+    count=0
+    p=0
+    #print("Decompressing")
+    inI=0
+    newString=b''
+    while len(newString)<size:
+        s=8
+        char=string[inI]
+        inI+=1
+        while s>0 and len(newString)!=size:
+            if char&1:
+                newString+=string[inI:inI+1]
+                inI+=1
+                count+=1
+            else:
+                data=struct.unpack('H',string[inI:inI+2])[0]
+                inI+=2
+                tempLen=(data&15)+2
+                data>>=4
+                count+=tempLen
+                offset=len(newString)-data
+                while tempLen>0:
+                    newString+=newString[offset:offset+1]
+                    offset+=1
+                    tempLen-=1
+            s-=1
+            char>>=1
+        if int(count/(size/10))>p:
+            p=int(count/(size/10))
+            if p<10:
+                print('%.d'%(p*10)+"%",flush=True,end=',')
+            else:
+                print('%.d'%(p*10)+"%!")
+    return newString
 
 
 if len(sys.argv) < 2:
