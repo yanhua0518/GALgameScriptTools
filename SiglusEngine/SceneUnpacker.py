@@ -126,7 +126,10 @@ def Decompress(string,size):
             char>>=1
         if int(count/(size/10))>p:
             p=int(count/(size/10))
-            print((p*10)+"%")
+            if p<10:
+                print('%.d'%(p*10)+"%",flush=True,end=',')
+            else:
+                print('%.d'%(p*10)+"%!")
     newString=output.getvalue()
     forDecomp.close()
     output.close()
