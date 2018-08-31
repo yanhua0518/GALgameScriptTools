@@ -4,3 +4,5 @@ Usage:
 SceneUnpacker.py <Scene.pck> [Scene\]
 ssDumper.py <Scene\> [text\]
 ssPacker.py <Scene\> <text\> [output\]
+
+SceneUnpackerNoDecompress.py为只解密不解压，之后用Decompress.bat人工多线程解压。渣电脑慎用……
