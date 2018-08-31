@@ -5,7 +5,7 @@ import sys
 import os
 import glob
 import struct
-import unicodedata
+#import unicodedata
 
 class Header:
     headerData=b''
@@ -33,12 +33,13 @@ def Decrypt(string,l,k):
         newString+=struct.pack('H',localKey^struct.unpack('H',string[n*2:n*2+2])[0])
     return newString
 
+'''
 def Check(scr):
     for char in scr:
         if unicodedata.east_asian_width(char)!='Na':
             return True
     return False
-
+'''
 
 if len(sys.argv) < 3:
     print ("Usage: "+sys.argv[0]+" <Scene\> <Text\> [Scene_packed\]")
