@@ -48,7 +48,7 @@ inF=sys.argv[1]+"\\"
 if len(sys.argv) < 3:
     outF=sys.argv[0][:sys.argv[0].rfind("\\")+1]+sys.argv[1][sys.argv[1].rfind("\\")+1:]+"_out\\"
 else:
-    outF=sys.argv[0][:sys.argv[0].rfind("\\")+1]+sys.argv[2]+"\\"
+    outF=sys.argv[0][:sys.argv[0].rfind("\\")+1]+sys.argv[2][sys.argv[1].rfind("\\")+1:]+"\\"
 
 if not os.path.exists(outF):
     os.makedirs(outF)
