@@ -122,6 +122,7 @@ def Decompress(string,size):
 
 
 if len(sys.argv) < 2:
+    print ("Usage: "+sys.argv[0]+" <dbs file>")
     quit()
 
 
