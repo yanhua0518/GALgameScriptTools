@@ -127,8 +127,8 @@ if len(sys.argv) < 2:
 
 
 dbs=open(sys.argv[1],'rb')
-header=dbs.read(4)
-if header==b'\x00\x00\x00\x00':
+head=dbs.read(4)
+if head==b'\x00\x00\x00\x00':
     isUTF=False
 else:
     isUTF=True
