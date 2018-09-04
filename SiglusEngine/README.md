@@ -1,9 +1,13 @@
 # SIGlusEngie Tools
 
 基本是照着number201724的代码抄来的，解压代码抄的Xmoe的，压缩看不懂先弄了个伪装的
+
 Python的速度慢到让人抓狂，人家C++一秒钟完事儿，我这个得要俩小时…………
+
 Dumper进行了文本过滤，过滤掉了纯英文的行
+
 dbsDecrypt过滤掉了空行和数字，dbsEncrypt和ScenePacker一样使用了伪压缩
+
 
 ***
 ## Usage:
