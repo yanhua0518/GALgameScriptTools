@@ -11,17 +11,13 @@ dbsDecrypt过滤掉了空行和数字，dbsEncrypt和ScenePacker一样使用了�
 
 ***
 ## Usage:
+'''
 SceneUnpacker.py <Scene.pck> [Scene\]
-
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2]
-
 ssDumper.py <Scene\> [text\]
-
 ssPacker.py <Scene\> <text\> [output\]
-
 dbsDecrypt.py <dbs file>
-  
 dbsEncrypt.py <dbs.out> [dbs.txt]
-
+'''
 
 ###### SceneUnpackerNoDecompress.py为只解密不解压，之后用Decompress.bat人工多线程解压。渣电脑慎用……
