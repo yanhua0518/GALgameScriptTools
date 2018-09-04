@@ -4,8 +4,8 @@ Python的速度慢到让人抓狂，人家C++一秒钟完事儿，我这个得�
 Dumper进行了文本过滤，过滤掉了纯英文的行
 dbsDecrypt过滤掉了空行和数字，dbsEncrypt和ScenePacker一样使用了伪压缩
 ***
-Usage:
-> SceneUnpacker.py <Scene.pck> [Scene\]
+## Usage:
+SceneUnpacker.py <Scene.pck> [Scene\]
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2]
 ssDumper.py <Scene\> [text\]
 ssPacker.py <Scene\> <text\> [output\]
