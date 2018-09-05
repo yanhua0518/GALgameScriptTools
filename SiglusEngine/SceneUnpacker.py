@@ -7,29 +7,6 @@ from ctypes import *
 import struct
 
 class Header:
-    headerData=b''
-    varInfoOffset=0
-    varNameIndexOffset=0
-    varNameOffset=0
-    cmdInfoOffset=0
-    cmdNameIndexOffset=0
-    cmdNameOffset=0
-    SceneNameIndexOffset=0
-    SceneNameOffset=0
-    SceneInfoOffset=0
-    SceneDataOffset=0
-    varInfoCount=0
-    varNameIndexCount=0
-    varNameCount=0
-    cmdInfoCount=0
-    cmdNameIndexCount=0
-    cmdNameCount=0
-    SceneNameIndexCount=0
-    SceneNameCount=0
-    SceneInfoCount=0
-    SceneDataCount=0
-    ExtraKeyUse=0
-    SourceHeaderLength=0
     def __init__(H,f):
         f.seek(0)
         H.length=struct.unpack('I',f.read(4))[0]
