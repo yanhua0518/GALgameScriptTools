@@ -27,7 +27,17 @@ class Header:
         H.dataFormatOffset=H.headerList[3]
         H.lineDataIndexOffset=H.headerList[4]
         H.textOffset=H.headerList[5]
-        
+
+def Transcode(uni):
+    tran=''
+    for ch in uni:
+        try:
+            ch.encode("GBK")
+        except:
+            tran+=u"·"
+        else:
+            tran+=ch
+    return tran.encode("GBK")
 
 def Decrypt1(string):
     key=[0x2D, 0x62, 0xF4, 0x89]
@@ -184,7 +194,7 @@ for m in range(0,header.lineCount):
             if isUTF:
                 tempString=lineData[m][n].encode("UTF-16")[2:]+b'\x00\x00'
             else:
-                tempString=lineData[m][n].encode('GBK')+b'\x00'
+                tempString=Transcode(lineData[m][n])+b'\x00'
             dbs.write(struct.pack('I',textOffset))
             textData+=tempString
             textOffset+=len(tempString)
