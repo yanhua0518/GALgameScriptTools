@@ -159,8 +159,8 @@ int searchData(unsigned char *buf,int dataSize,int compLevel,unsigned char *comp
 }
 
 int match(unsigned char *inBuf,unsigned char *matchBuf,int size){
-	int i;
-	for(i=0;i<size;i++){
+	int i=2;
+	for(;i<size;i++){
 		if(inBuf[i]!=matchBuf[i]){
 			break;
 		}
