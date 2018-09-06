@@ -9,6 +9,9 @@ extern "C"
 	__declspec(dllexport) void decrypt2(unsigned char* buf,size_t size);
 	__declspec(dllexport) void decompress(unsigned char* inBuf,unsigned char* outBuf,int size);
 	__declspec(dllexport) void fakeCompress(unsigned char* inBuf,unsigned char* outBuf,int size);
+	__declspec(dllexport) unsigned char* compress(unsigned char* inBuf, int inSize, int *compLen ,int level);
+	int searchData(unsigned char *buf,int dataSize,int compLevel,unsigned char *compBuf,int *compLen);
+	int match(unsigned char *inBuf,unsigned char *matchBuf,int size);
 }
 
 void decrypt1(unsigned char* buf,size_t size,unsigned char* key)
@@ -79,7 +82,7 @@ void decompress(unsigned char* inBuf,unsigned char* outBuf,int size){
 
 void fakeCompress(unsigned char* inBuf,unsigned char* outBuf,int size){
 	void *end=inBuf+size;
-	*outBuf+=8;
+	outBuf+=8;
 	for(int count=8;inBuf<end;count++){
 		if(count==8){
 			*outBuf++=0xFF;
@@ -87,4 +90,80 @@ void fakeCompress(unsigned char* inBuf,unsigned char* outBuf,int size){
 		}
 		*outBuf++=*inBuf++;
 	}
+}
+
+unsigned char* compress(unsigned char* inBuf, int inSize, int *compLen ,int level){
+	if(level<2){
+		level=2;
+	}else if(level>17){
+		level=17;
+	}
+	unsigned char *outBuf=(unsigned char*)calloc(inSize*2,sizeof(unsigned char)),*outPtr=outBuf;
+	int ptr=0,outLen=0,s=0;
+	outBuf+=8;
+	while(ptr<inSize){
+		unsigned char *byteBuf=outBuf;
+		outLen++,outBuf++;
+		for(s=0;s<8;s++){
+			int offset=0,copyLen=0,scan=ptr,curLevel=level;
+			if(scan>0xFFF){
+				scan=0xFFF;
+			}
+			if(ptr<curLevel){
+				curLevel=ptr;
+			}
+			if(ptr+curLevel>inSize){
+				curLevel=inSize-ptr;
+			}
+			if(curLevel>1){
+				offset=searchData(inBuf,scan,curLevel,inBuf,&copyLen);
+			}
+			if(offset==0){
+				*byteBuf+=1<<s;
+				*outBuf++=*inBuf++;
+				ptr++;
+				outLen++;
+			}else{
+				*(unsigned short*)outBuf=(offset<<4)+(copyLen-2);
+				inBuf+=copyLen;
+				ptr+=copyLen;
+				outBuf+=2;
+				outLen+=2;
+			}
+		}
+	}
+	outLen+=8;
+	*(int*)outPtr=outLen;
+	*(int*)(outPtr+4)=inSize;
+	*compLen=outLen;
+	return outPtr;
+}
+
+int searchData(unsigned char *buf,int dataSize,int compLevel,unsigned char *compBuf,int *compLen){
+	unsigned char *ptr=buf;
+	int curOffset=0,curCompLen=0,tempLen=0;
+	for(ptr=buf-1;ptr>=buf-dataSize;ptr--){
+		if(*(unsigned short*)ptr==*(unsigned short*)compBuf){
+			tempLen=match(ptr,compBuf,compLevel);
+			if(tempLen>curCompLen){
+				curCompLen=tempLen;
+				curOffset=buf-ptr;
+				if(curCompLen==compLevel){
+					break;
+				}
+			}
+		}
+	}
+	*compLen=curCompLen;
+	return curOffset;
+}
+
+int match(unsigned char *inBuf,unsigned char *matchBuf,int size){
+	int i;
+	for(i=0;i<size;i++){
+		if(inBuf[i]!=matchBuf[i]){
+			break;
+		}
+	}
+	return i;
 }

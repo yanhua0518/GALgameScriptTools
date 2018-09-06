@@ -41,30 +41,39 @@ def Decrypt2(string):
 
 def FakeCompress(string):
     ssSize=len(string)
-    dataSize=ssSize+int(ssSize/8)
+    dataSize=ssSize+int(ssSize/8)+8
     if not ssSize%8==0:
         dataSize+=1
-    newString=bytes(dataSize)
+    newString=struct.pack('2I',dataSize,ssSize)+bytes(dataSize-8)
     dll.fakeCompress(string,newString,ssSize)
-    return struct.pack('2I',dataSize,ssSize)+newString
+    return newString
 
-def Compress(string):
+def Compress(string,level):
     length=len(string)
     size=c_int(0)
-    p=Xmoe.CompressData(string,length,pointer(size),17)
+    p=dll.compress(string,length,pointer(size),level)
     newString=string_at(p,size)
     return newString
     
 
 argv=sys.argv
 if argv.count('-c')>0:
-    doComp=True
+    try:
+        comp=int(argv[argv.index('-c')+1])
+    except:
+        comp=17
+    else:
+        argv.pop(argv.index('-c')+1)
+    if comp<2:
+        comp=2
+    elif comp>17:
+        comp=17
     argv.remove('-c')
 else:
-    doComp=False
+    comp=0
     
 if len(argv)<3:
-    print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c]")
+    print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]")
     quit()
 
 if len(argv)<4:
@@ -85,12 +94,6 @@ try:
 except:
     print("Can't open Decryption.dll")
     quit()
-if doComp:
-    try:
-        Xmoe=CDLL('Compression.dll')
-    except:
-        print("Can't open Compression.dll")
-        quit()
 
 size=os.path.getsize(argv[1])
 scene=open(argv[1],'rb')
@@ -133,8 +136,8 @@ for n in range(0,header.SceneDataCount):
     print(fileName)
     ssFile=open(inF+fileName,'rb')
     data=ssFile.read()
-    if doComp:
-        compData=Compress(data)
+    if comp:
+        compData=Compress(data,comp)
     else:
         compData=FakeCompress(data)
     '''
