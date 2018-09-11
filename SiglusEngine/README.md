@@ -26,7 +26,7 @@ SceneUnpacker.py <Scene.pck> [Scene\]
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
 
 GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
-GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-c] [-p]
+GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c]
 
 ssDumper.py <Scene\> [text\]
 ssPacker.py <Scene\> <text\> [output\]
