@@ -6,7 +6,7 @@ otherTools里是 https://github.com/marcussacana/SiglusSceneManager 的工具，
 可以直接编辑ss和dbs（不推荐）。
 主要的是用它来搜索Key。
 
-处理Scene需要把py里面的key改成目标游戏的Key，默认的是“神待ちサナちゃん　DL版”。
+处理Scene和Gameexe需要把py里面的key改成目标游戏的Key，默认的是“神待ちサナちゃん　DL版”。
 
 外挂了C++来处理，速度得到了飞跃性的提升（谜之声：那干嘛不直接用C写？——别闹，py才是灵魂啊！）
 
