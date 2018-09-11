@@ -26,6 +26,8 @@ class Header:
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
 def Decrypt1(string):
+    if header.ExtraKeyUse==0:
+        return string
     # Change this key to your game's key.
     key=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
          0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
