@@ -3,6 +3,7 @@
 
 import sys
 import os
+from ctypes import *
 import struct
 
 '''
@@ -49,82 +50,33 @@ class Header:
         H.lineDataIndexOffset=H.headerList[4]
         H.textOffset=H.headerList[5]
         
-
 def Decrypt1(string):
-    key=[0x2D, 0x62, 0xF4, 0x89]
-    newString=b''
-    n=0
-    for char in string:
-        newString+=bytes([char^key[n]])
-        n+=1
-        n&=3
-    
-    return newString
+    key=[0x2D, 0x62, 0xF4, 0x89, 0x2D, 0x62, 0xF4, 0x89,
+         0x2D, 0x62, 0xF4, 0x89, 0x2D, 0x62, 0xF4, 0x89]
+    size=len(string)
+    keyBuf=c_char_p(struct.pack('16B',*key))
+    dll.decrypt1(string,size,keyBuf)
+    return string
 
-def Decrypt2(string):
-    key=[[0x0E, 0xC7, 0x90, 0x71],[0x35, 0xF1, 0x9B, 0x49]]
-    r=[0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,
-       1,1,0,0,1,1,1,0,0,1,1,1,0,0,1,1,
-       0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,
-       1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,
-       1,1,1,0,0,1,1,1,0,0,1,1,1,0,0,1]
-    newString=b''
-    n=0
-    c=0
-    for char in string:
-        newString+=bytes([char^key[r[c]][n]])
-        n+=1
-        if n>3:
-            n=0
-            c+=1
-            if c>79:
-                c=0
-    
-    return newString
+def Decrypt3(string):
+    size=len(string)
+    dll.decrypt3(string,size)
+    return string
+
 
 def Decompress(string,size):
-    count=0
-    #p=0
-    #print("Decompressing")
-    inI=0
-    newString=b''
-    while len(newString)<size:
-        s=8
-        char=string[inI]
-        inI+=1
-        while s>0 and len(newString)!=size:
-            if char&1:
-                newString+=string[inI:inI+1]
-                inI+=1
-                count+=1
-            else:
-                data=struct.unpack('H',string[inI:inI+2])[0]
-                inI+=2
-                tempLen=(data&15)+2
-                data>>=4
-                count+=tempLen
-                offset=len(newString)-data
-                while tempLen>0:
-                    newString+=newString[offset:offset+1]
-                    offset+=1
-                    tempLen-=1
-            s-=1
-            char>>=1
-        '''
-        if int(count/(size/10))>p:
-            p=int(count/(size/10))
-            if p<10:
-                print('%.d'%(p*10)+"%",flush=True,end=',')
-            else:
-                print('%.d'%(p*10)+"%!")
-        '''
+    newString=bytes(size)
+    dll.decompress(string,newString,size)
     return newString
-
 
 if len(sys.argv) < 2:
     print ("Usage: "+sys.argv[0]+" <dbs file>")
     quit()
-
+try:
+    dll=CDLL('Decryption.dll')
+except:
+    print("Can't open Decryption.dll")
+    quit()
 
 dbs=open(sys.argv[1],'rb')
 head=dbs.read(4)
@@ -135,9 +87,14 @@ else:
 data=dbs.read()
 dbs.close()
 dataA=Decrypt1(data)
+'''
+output=open(sys.argv[1]+'.dec','wb')
+output.write(dataA)
+output.close()
+'''
 compSize,decompSize=struct.unpack('2I',dataA[:8])
 dataB=Decompress(dataA[8:],decompSize)
-dataC=Decrypt2(dataB)
+dataC=Decrypt3(dataB)
 
 output=open(sys.argv[1]+'.out','wb')
 output.write(dataC)

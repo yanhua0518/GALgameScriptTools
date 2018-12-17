@@ -4,6 +4,7 @@
 import sys
 import os
 from io import BytesIO
+from ctypes import *
 import struct
 
 class Header:
@@ -40,60 +41,70 @@ def Transcode(uni):
     return tran.encode("GBK")
 
 def Decrypt1(string):
-    key=[0x2D, 0x62, 0xF4, 0x89]
-    newString=b''
-    n=0
-    for char in string:
-        newString+=bytes([char^key[n]])
-        n+=1
-        n&=3
-    
+    key=[0x2D, 0x62, 0xF4, 0x89, 0x2D, 0x62, 0xF4, 0x89,
+         0x2D, 0x62, 0xF4, 0x89, 0x2D, 0x62, 0xF4, 0x89]
+    size=len(string)
+    keyBuf=c_char_p(struct.pack('16B',*key))
+    dll.decrypt1(string,size,keyBuf)
+    return string
+
+def Decrypt3(string):
+    size=len(string)
+    dll.decrypt3(string,size)
+    return string
+
+def FakeCompress(string):
+    ssSize=len(string)
+    dataSize=ssSize+int(ssSize/8)+8
+    if not ssSize%8==0:
+        dataSize+=1
+    newString=struct.pack('2I',dataSize,ssSize)+bytes(dataSize-8)
+    dll.fakeCompress(string,newString,ssSize)
     return newString
 
-def Decrypt2(string):
-    key=[[0x0E, 0xC7, 0x90, 0x71],[0x35, 0xF1, 0x9B, 0x49]]
-    r=[0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,
-       1,1,0,0,1,1,1,0,0,1,1,1,0,0,1,1,
-       0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,
-       1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,
-       1,1,1,0,0,1,1,1,0,0,1,1,1,0,0,1]
-    newString=b''
-    n=0
-    c=0
-    for char in string:
-        newString+=bytes([char^key[r[c]][n]])
-        n+=1
-        if n>3:
-            n=0
-            c+=1
-            if c>79:
-                c=0
-    
-    return newString
-
-def Compress(string):
+def Compress(string,level):
     length=len(string)
-    newString=b''
-    for n in range(0,int(length/8)):
-        newString+=b'\xff'+string[n*8:n*8+8]
-    if not length%8==0:
-        last=string[(n+1)*8:]
-        newString+=bytes([255>>(8-length%8)])+last
+    size=c_int(0)
+    p=dll.compress(string,length,pointer(size),level)
+    newString=string_at(p,size)
     return newString
 
+argv=sys.argv
 
-if len(sys.argv) < 2:
-    print ("Usage: "+sys.argv[0]+" <dbs.out> [dbs.txt]")
-    quit()
-elif len(sys.argv) >2:
-    txtFN=sys.argv[2]
+if argv.count('-c')>0:
+    try:
+        comp=int(argv[argv.index('-c')+1])
+    except:
+        comp=17
+    else:
+        argv.pop(argv.index('-c')+1)
+    if comp<2:
+        comp=2
+    elif comp>17:
+        comp=17
+    argv.remove('-c')
 else:
-    txtFN=sys.argv[1].replace('.out','.txt')
-inFN=sys.argv[1]
+    comp=0
+
+if len(argv) < 2:
+    print ("Usage: "+sys.argv[0]+" <dbs.out> [dbs.txt] [-c [2~17]]")
+    quit()
+elif len(argv) >2:
+    txtFN=argv[2]
+else:
+    txtFN=argv[1].replace('.out','.txt')
+inFN=argv[1]
 if inFN[-8:]!='.dbs.out':
     print("Input file MUST be *.dbs.out")
     quit()
-outFN=sys.argv[1].replace('.out','.new')
+outFN=argv[1].replace('.out','.new')
+
+try:
+    dll=CDLL('Decryption.dll')
+except:
+    print("Can't open Decryption.dll")
+    quit()
+
 try:
     f=open(inFN,'rb')
     f.read()
@@ -214,19 +225,17 @@ dbs.write(struct.pack('I',dbsSize))
 dbs.seek(0,2)
 dbs.write(dummy)
 dbsSize=dbs.tell()
-dataB=Decrypt2(dbs.getvalue())
+dataB=Decrypt3(dbs.getvalue())
 '''
 dbsFile=open(outFN.replace('.new','.ori'),'wb')
 dbsFile.write(dbs.getvalue())
 dbsFile.close()
 '''
 dbs.close()
-#No compression yet, this is fake.
-dataSize=dbsSize+int(dbsSize/8)+8
-if not dbsSize%8==0:
-    dataSize+=1
-dataA=struct.pack('2I',dataSize,dbsSize)
-dataA+=Compress(dataB)
+if comp:
+    dataA=Compress(dataB,comp)
+else:
+    dataA=FakeCompress(dataB)
 data=Decrypt1(dataA)
 
 output=open(outFN,'wb')
