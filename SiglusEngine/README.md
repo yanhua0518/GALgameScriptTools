@@ -14,7 +14,9 @@ ScenePacker用-c调用压缩函数，压缩等级2-17，默认为最高17（因�
 
 GameexePacker同样支持-c，-p控制是否二次加密（大致测试并无影响）。
 
-ss和dbs文件小对速度没啥影响，就不改了。
+dbs也用上了C++，-c压缩参数同上。
+
+增加用于移动端的pck封装文件的解包功能。
 
 Dumper进行了文本过滤，过滤掉了纯英文的行，
 dbsDecrypt过滤掉了空行和数字。
@@ -26,11 +28,13 @@ SceneUnpacker.py <Scene.pck> [Scene\]
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
 
 GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
-GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c]
+GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]]
 
 ssDumper.py <Scene\> [text\]
 ssPacker.py <Scene\> <text\> [output\]
 
 dbsDecrypt.py <dbs file>
-dbsEncrypt.py <dbs.out> [dbs.txt]
+dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]]
+
+pckUnpacker.py <pck file> [output folder\]
 ```
