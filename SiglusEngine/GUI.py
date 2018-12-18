@@ -10,10 +10,10 @@ from tkinter import messagebox
 import struct
 
 tool=["Unpack Scene","Pack Scene","Unpack Gameexe","Pack Gameexe",
-        "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck"]
+        "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck"]
 command=["SceneUnpacker.py","ScenePacker.py","GameexeUnpacker.py",
          "GameexePacker.py","ssDumper.py","ssPacker.py",
-         "dbsDecrypt.py","dbsEncrypt.py","pckUnpacker.py"]
+         "dbsDecrypt.py","dbsEncrypt.py","pckUnpacker.py","pckPacker.py"]
 
 ENTRY_WIDTH=58
 BUTTON_WIDTH=6
@@ -58,6 +58,8 @@ def select(event):
         option=PackDbs()
     elif selected==8:
         option=UnpackPck()
+    elif selected==9:
+        option=PackPck()
     title.pack_forget()
     title=Label(selectedFrame,text=tool[selected],font=('Fixdsys 14 bold'))
     title.pack()
@@ -384,6 +386,30 @@ class UnpackPck:
         cmd=value1.get()+' '+value2.get()
         return cmd
         
+class PackPck:
+    def __init__(self):
+        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
+        global buttonB,nameC,entryC
+        global value1,value2,value3,valueB,valueC
+        clear()
+        name1=Label(inputFrame,text="Folder to pack:")
+        name2=Label(inputFrame,text="Output file:")
+        name1.grid(row=0,padx=2,sticky='w')
+        name2.grid(row=2,padx=2,sticky='w')
+        value1.set("")
+        value2.set("")
+        entry1=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value1)
+        entry2=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value2)
+        entry1.grid(row=1,column=0,padx=2)
+        entry2.grid(row=3,column=0,padx=2)
+        button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value1))
+        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
+        button1.grid(row=1,column=1,padx=2)
+        button2.grid(row=3,column=1,padx=2)
+    def format(self):
+        cmd=value1.get()+' '+value2.get()
+        return cmd
+
 
 root=Tk()
 root.title("Siglus Tools")

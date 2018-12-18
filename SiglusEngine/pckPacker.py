@@ -66,17 +66,16 @@ def main(argv):
     for size in fileSize:
         pck.write(struct.pack('2Q',offset,size))
         offset+=size
-    for inFN in inList:
-        print(inFN)
-        file=open(inFN,'rb')
-        pck.write(file.read())
-        file.close()
     pck.seek(8)
     pck.write(struct.pack('2I',dataOffset-indexOffset,sizeOffset-indexOffset))
-
     output=open(outFN,'wb')
     output.write(pck.getvalue())
     pck.close()
+    for inFN in inList:
+        print(inFN)
+        file=open(inFN,'rb')
+        output.write(file.read())
+        file.close()
     output.close()
 
 if __name__=="__main__":
