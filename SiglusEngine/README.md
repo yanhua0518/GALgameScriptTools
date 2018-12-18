@@ -40,4 +40,5 @@ dbsDecrypt.py <dbs file>
 dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]]
 
 pckUnpacker.py <pck file> [output folder\]
+pckPacker.py <folder\> [output file]
 ```
