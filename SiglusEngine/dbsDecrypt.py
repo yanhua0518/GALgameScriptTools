@@ -54,7 +54,7 @@ def main(argv):
 
     if len(argv) < 2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file>")
-        quit()
+        return
 
     dbs=open(argv[1],'rb')
     head=dbs.read(4)
@@ -138,4 +138,3 @@ def main(argv):
         
 if __name__=="__main__":
     main(sys.argv)
-    

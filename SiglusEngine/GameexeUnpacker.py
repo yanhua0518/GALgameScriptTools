@@ -10,7 +10,7 @@ def main(argv):
 
     if len(argv)<2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Gameexe.dat> [Gameexe.ini]")
-        quit()
+        return
 
     if len(argv)<3:
         outFN="Gameexe.ini"
@@ -22,7 +22,7 @@ def main(argv):
         f.read()
         f.close()
     except:
-        quit()
+        return
 
     gameexe=open(argv[1],'rb')
     header=gameexe.read(4)

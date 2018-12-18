@@ -59,7 +59,7 @@ def main(argv):
 
     if len(argv) < 2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs.out> [dbs.txt] [-c [2~17]]")
-        quit()
+        return
     elif len(argv) >2:
         txtFN=argv[2]
     else:
@@ -67,7 +67,7 @@ def main(argv):
     inFN=argv[1]
     if inFN[-8:]!='.dbs.out':
         print("Input file MUST be *.dbs.out")
-        quit()
+        return
     outFN=argv[1].replace('.out','.new')
 
     try:
@@ -76,14 +76,14 @@ def main(argv):
         f.close()
     except:
         print("Input file error!")
-        quit()
+        return
     try:
         f=open(txtFN,'r',1,'UTF-16')
         f.read()
         f.close()
     except:
         print("Text file error!")
-        quit()
+        return
 
     txt=open(txtFN,'r',1,'UTF-16')
     head=txt.readline()
@@ -94,7 +94,7 @@ def main(argv):
     else:
         print("Text error!")
         txt.close()
-        quit()
+        return
 
     file=open(inFN,'rb')
     header=Header(file)
@@ -221,4 +221,3 @@ def main(argv):
 
 if __name__=="__main__":
     main(sys.argv)
-    

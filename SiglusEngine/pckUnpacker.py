@@ -21,7 +21,7 @@ def main(argv):
         
     if len(argv)<2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <pck file> [output folder\]")
-        quit()
+        return
 
     if len(argv)<3:
         outF=argv[1].replace(".pck","")+"\\"
@@ -33,14 +33,14 @@ def main(argv):
         f.read()
         f.close()
     except:
-        quit()
+        return
 
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
     header=Header(scene)
     if not header.type==1:
         print("NOT a pck data file!")
-        quit()
+        return
 
     if not os.path.exists(outF):
         os.makedirs(outF)

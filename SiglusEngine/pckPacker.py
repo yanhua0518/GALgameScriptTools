@@ -25,14 +25,14 @@ def main(argv):
         
     if len(argv)<2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <folder\> [output file]")
-        quit()
+        return
 
     inF=argv[1]+"\\"
     inList=glob.glob(inF+"*.*")
     fileCount=len(inList)
     if fileCount<1:
         print("No file to pack!")
-        quit()
+        return
     
     if len(argv)<3:
         outFN=(argv[1]+".pck").replace("\\.",".").replace("/.",".")

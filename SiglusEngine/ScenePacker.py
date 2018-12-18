@@ -44,7 +44,7 @@ def main(argv):
         
     if len(argv)<3:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]")
-        quit()
+        return
 
     if len(argv)<4:
         outFN="Scene.pck2"
@@ -57,7 +57,7 @@ def main(argv):
         f.read()
         f.close()
     except:
-        quit()
+        return
         
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')

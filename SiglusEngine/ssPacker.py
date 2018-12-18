@@ -36,7 +36,7 @@ def main(argv):
 
     if len(argv) < 3:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\]")
-        quit()
+        return
 
     inF=argv[1]+"\\"
     txtF=argv[2]+"\\"

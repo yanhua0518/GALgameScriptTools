@@ -31,7 +31,7 @@ def main(argv):
 
     if len(argv)<2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Gameexe.ini> [Gameexe.dat2] [-p] [-c]")
-        quit()
+        return
 
     if len(argv)<3:
         outFN="Gameexe.dat2"
@@ -41,7 +41,7 @@ def main(argv):
         ini=open(argv[1],'rb')
         ini.read(2)
     except:
-        quit()
+        return
 
     data=ini.read()
     ini.close()

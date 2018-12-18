@@ -29,7 +29,7 @@ def main(argv):
     
     if len(argv)<2:
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\]")
-        quit()
+        return
 
     if len(argv)<3:
         outF=argv[0][:argv[0].rfind("\\")+1]+"Scene\\"
@@ -41,7 +41,7 @@ def main(argv):
         f.read()
         f.close()
     except:
-        quit()
+        return
     
     if not os.path.exists(outF):
         os.makedirs(outF)
