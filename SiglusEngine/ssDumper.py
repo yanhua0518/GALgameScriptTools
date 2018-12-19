@@ -34,12 +34,12 @@ def Check(scr):
 
 def main(argv):
 
-    if len(argv) < 2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\]")
-        return
+        return False
 
     inF=argv[1]+"\\"
-    if len(argv) < 3:
+    if len(argv)<3 or argv[2]=='':
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[1][argv[1].rfind("\\")+1:]+"_out\\"
     else:
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
@@ -74,6 +74,7 @@ def main(argv):
         output.close()
         if os.path.getsize(outFN)==0:
             os.remove(outFN)
+    return True
 
 if __name__=="__main__":
     main(sys.argv)

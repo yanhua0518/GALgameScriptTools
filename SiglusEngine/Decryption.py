@@ -6,6 +6,11 @@ import os
 from ctypes import *
 import struct
 
+
+# Change this key to your game's key.
+DEFAULT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
+             0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
+
 def Decrypt(string,l,k):
     key=28807
     localKey=key*k%65536
@@ -14,10 +19,9 @@ def Decrypt(string,l,k):
         newString+=struct.pack('H',localKey^struct.unpack('H',string[n*2:n*2+2])[0])
     return newString
 
-def Decrypt1(string):
-    # Change this key to your game's key.
-    key=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
-         0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
+def Decrypt1(string,key):
+    if not key:
+        key=DEFAULT_KEY
     size=len(string)
     keyBuf=c_char_p(struct.pack('16B',*key))
     dll.decrypt1(string,size,keyBuf)
@@ -89,3 +93,4 @@ try:
 except:
     print("Can't open Decryption.dll")
     quit()
+

@@ -25,13 +25,13 @@ class Header:
         H.ExtraKeyUse=struct.unpack('I',f.read(4))[0]
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
-def main(argv):
+def main(argv,key):
     
-    if len(argv)<2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\]")
-        return
+        return False
 
-    if len(argv)<3:
+    if len(argv)<3 or argv[2]=='':
         outF=argv[0][:argv[0].rfind("\\")+1]+"Scene\\"
     else:
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
@@ -41,7 +41,7 @@ def main(argv):
         f.read()
         f.close()
     except:
-        return
+        return False
     
     if not os.path.exists(outF):
         os.makedirs(outF)
@@ -81,7 +81,7 @@ def main(argv):
         fileName=SceneNameString[n].decode("UTF-16")+'.ss'
         print(fileName)
         if header.ExtraKeyUse:
-            data=Decrypt2(Decrypt1(SceneData[n]))
+            data=Decrypt2(Decrypt1(SceneData[n],key))
         else:
             data=Decrypt2(SceneData[n])
         '''
@@ -94,6 +94,7 @@ def main(argv):
         output=open(outF+fileName,'wb')
         output.write(decompData)
         output.close()
+    return True
 
 if __name__=="__main__":
-    main(sys.argv)
+    main(sys.argv,[])

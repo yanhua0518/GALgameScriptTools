@@ -25,7 +25,7 @@ class Header:
         H.ExtraKeyUse=struct.unpack('I',f.read(4))[0]
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
-def main(argv):
+def main(argv,key):
     
     if argv.count('-c')>0:
         try:
@@ -42,11 +42,11 @@ def main(argv):
     else:
         comp=0
         
-    if len(argv)<3:
+    if len(argv)<3 or argv[1]=='' or argv[2]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]")
-        return
+        return False
 
-    if len(argv)<4:
+    if len(argv)<4 or argv[3]=='':
         outFN="Scene.pck2"
     else:
         outFN=argv[3]
@@ -57,7 +57,7 @@ def main(argv):
         f.read()
         f.close()
     except:
-        return
+        return False
         
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
@@ -110,7 +110,7 @@ def main(argv):
         compFile.close()
         '''
         if header.ExtraKeyUse:
-            SceneData[n]=Decrypt2(Decrypt1(compData))
+            SceneData[n]=Decrypt2(Decrypt1(compData,key))
         else:
             SceneData[n]=Decrypt2(compData)
         SceneDataLength[n]=len(compData)
@@ -134,6 +134,7 @@ def main(argv):
         output.write(SceneData[n])
     scene.close()
     output.close()
+    return True
 
 if __name__=="__main__":
-    main(sys.argv)
+    main(sys.argv,[])

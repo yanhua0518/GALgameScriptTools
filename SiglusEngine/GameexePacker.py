@@ -6,7 +6,7 @@ import os
 import struct
 from Decryption import Decrypt1,Decrypt4,FakeCompress,Compress
 
-def main(argv):
+def main(argv,key):
 
     if argv.count('-p')>0:
         needKey=True
@@ -29,11 +29,11 @@ def main(argv):
     else:
         comp=0
 
-    if len(argv)<2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Gameexe.ini> [Gameexe.dat2] [-p] [-c]")
-        return
+        return False
 
-    if len(argv)<3:
+    if len(argv)<3 or argv[2]=='':
         outFN="Gameexe.dat2"
     else:
         outFN=argv[2]
@@ -41,7 +41,7 @@ def main(argv):
         ini=open(argv[1],'rb')
         ini.read(2)
     except:
-        return
+        return False
 
     data=ini.read()
     ini.close()
@@ -54,13 +54,14 @@ def main(argv):
             compSize+=1
         compData=struct.pack('2I',compSize,size)+FakeCompress(data)
     if needKey:
-        outData=b'\x00\x00\x00\x00\x01\x00\x00\x00'+Decrypt4(Decrypt1(compData))
+        outData=b'\x00\x00\x00\x00\x01\x00\x00\x00'+Decrypt4(Decrypt1(compData,key))
     else:
         outData=b'\x00\x00\x00\x00\x00\x00\x00\x00'+Decrypt4(compData)
 
     output=open(outFN,'wb')
     output.write(outData)
     output.close()
+    return True
 
 if __name__=="__main__":
-    main(sys.argv)
+    main(sys.argv,[])

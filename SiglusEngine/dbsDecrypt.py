@@ -52,10 +52,17 @@ class Header:
         
 def main(argv):
 
-    if len(argv) < 2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file>")
-        return
+        return False
 
+    try:
+        f=open(argv[1],'rb')
+        f.read()
+        f.close()
+    except:
+        return False
+    
     dbs=open(argv[1],'rb')
     head=dbs.read(4)
     if head==b'\x00\x00\x00\x00':
@@ -135,6 +142,7 @@ def main(argv):
             '''
         txt.write('\n')
     txt.close()
+    return True
         
 if __name__=="__main__":
     main(sys.argv)

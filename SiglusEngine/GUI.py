@@ -3,11 +3,13 @@
 
 import sys
 import os
-from ctypes import *
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
 import struct
+import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
+import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker
+
 
 tool=["Unpack Scene","Pack Scene","Unpack Gameexe","Pack Gameexe",
         "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck"]
@@ -19,19 +21,57 @@ ENTRY_WIDTH=58
 BUTTON_WIDTH=6
 PAD=4
 lastDir=os.getcwd()
+DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
+             0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
+KEY_FILE="SiglusKey.txt"
+
+def stringKey(key):
+    keyHex=[]
+    for byte in key:
+        keyHex.append(hex(byte))
+    keyStr=str(keyHex).replace("[","").replace("]","").replace("'","")
+    return keyStr
+
+def setKey(keyStr):
+    keyHex=keyStr.split(',')
+    key=[]
+    for byte in keyHex:
+        key.append(int(byte,16))
+    return key
+    
+def loadKey():
+    try:
+        file=open(KEY_FILE,'r')
+        keyStr=file.readline()
+        file.close()
+        key=setKey(keyStr)
+    except:
+        return []
+    else:
+        return key
+
+def saveKey():
+    keyStr=stringKey(DECRYPT_KEY)
+    file=open(KEY_FILE,'w')
+    file.write(keyStr)
+    file.close()
+    return True
 
 def start():
-    global lastSelect,option
+    global lastSelect,option,DECRYPT_KEY
     optionList.selection_set(lastSelect)
-    cmdLine=command[lastSelect]+' '+option.format()
-    print(cmdLine)
     try:
-        os.system("python "+cmdLine)
+        tempKey=setKey(keyVar.get())
+        DECRYPT_KEY=tempKey
+        check=option.run()
     except:
-        messagebox.showerror("Error!","Error!")
+        messagebox.showerror("Error!","Error!\nKey is wrong?")
     else:
-        messagebox.showinfo("Notice","Finished!")
-    
+        if check:
+            messagebox.showinfo("Notice","Finished!")
+            saveKey()
+        else:
+            messagebox.showwarning("Warning","Input error!")
 
 def select(event):
     global lastSelect,option,title
@@ -128,11 +168,10 @@ class UnpackScene:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
-        return cmd
+    def run(self):
+        cmd=["SceneUnpacker",value1.get(),value2.get()]
+        return SceneUnpacker.main(cmd,DECRYPT_KEY)
 
-    
 class PackScene:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
@@ -165,8 +204,8 @@ class PackScene:
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
         entryC.grid(row=7,column=1,padx=2,pady=4)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()+' '+value3.get()
+    def run(self):
+        cmd=["ScenePacker",value1.get(),value2.get(),value3.get()]
         try:
             comp=int(valueC.get())
         except:
@@ -177,10 +216,10 @@ class PackScene:
             elif comp>17:
                 comp=17
         if comp!=0:
-            cmd+=' -c '+str(comp)
-        return cmd
+            cmd.append("-c")
+            cmd.append(str(comp))
+        return ScenePacker.main(cmd,DECRYPT_KEY)
         
-
 class UnpackGameexe:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
@@ -201,9 +240,9 @@ class UnpackGameexe:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
-        return cmd
+    def run(self):
+        cmd=["GameexeUnpacker",value1.get(),value2.get()]
+        return GameexeUnpacker.main(cmd,DECRYPT_KEY)
 
 class PackGameexe:
     def __init__(self):
@@ -215,7 +254,7 @@ class PackGameexe:
         name2=Label(inputFrame,text="Output file:")
         name1.grid(row=0,padx=2,sticky='w')
         name2.grid(row=2,padx=2,sticky='w')
-        value1.set("Gameeexe.ini")
+        value1.set("Gameexe.ini")
         value2.set("Gameexe.dat2")
         entry1=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value1)
         entry2=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value2)
@@ -233,10 +272,10 @@ class PackGameexe:
         valueB.set(False)
         buttonB=Checkbutton(inputFrame,text="Double Encryption(Useless)",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
-    def format(self):
-        cmd=value1.get()+' '+value2.get()+' '+value3.get()
+    def run(self):
+        cmd=["GameexePacker",value1.get(),value2.get(),value3.get()]
         if valueB.get():
-            cmd+='-p'
+            cmd.append("-p")
         try:
             comp=int(valueC.get())
         except:
@@ -247,8 +286,9 @@ class PackGameexe:
             elif comp>17:
                 comp=17
         if comp!=0:
-            cmd+=' -c '+str(comp)
-        return cmd
+            cmd.append("-c")
+            cmd.append(str(comp))
+        return GameexePacker.main(cmd,DECRYPT_KEY)
 
 class DumpSs:
     def __init__(self):
@@ -270,9 +310,9 @@ class DumpSs:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
-        return cmd
+    def run(self):
+        cmd=["ssDumper",value1.get(),value2.get()]
+        return ssDumper.main(cmd)
 
 class PackSs:
     def __init__(self):
@@ -301,9 +341,9 @@ class PackSs:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()+' '+value3.get()
-        return cmd
+    def run(self):
+        cmd=["ssPacker",value1.get(),value2.get(),value3.get()]
+        return ssPacker.main(cmd)
 
 class DumpDbs:
     def __init__(self):
@@ -318,9 +358,9 @@ class DumpDbs:
         entry1.grid(row=1,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()
-        return cmd
+    def run(self):
+        cmd=["dbsDecrypt",value1.get()]
+        return dbsDecrypt.main(cmd)
 
 class PackDbs:
     def __init__(self):
@@ -347,8 +387,8 @@ class PackDbs:
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
         entryC.grid(row=7,column=1,padx=2,pady=4)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
+    def run(self):
+        cmd=["dbsEncrypt",value1.get(),value2.get()]
         try:
             comp=int(valueC.get())
         except:
@@ -359,8 +399,9 @@ class PackDbs:
             elif comp>17:
                 comp=17
         if comp!=0:
-            cmd+=' -c '+str(comp)
-        return cmd
+            cmd.append("-c")
+            cmd.append(str(comp))
+        return dbsEncrypt.main(cmd)
 
 class UnpackPck:
     def __init__(self):
@@ -382,9 +423,9 @@ class UnpackPck:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
-        return cmd
+    def run(self):
+        cmd=["pckUnpacker",value1.get(),value2.get()]
+        return pckUnpacker.main(cmd)
         
 class PackPck:
     def __init__(self):
@@ -406,25 +447,28 @@ class PackPck:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-    def format(self):
-        cmd=value1.get()+' '+value2.get()
-        return cmd
+    def run(self):
+        cmd=["pckPacker",value1.get(),value2.get()]
+        return pckPacker.main(cmd)
 
 
 root=Tk()
 root.title("Siglus Tools")
-root.geometry("640x260")
+root.geometry("640x300")
 root.resizable(False,False)
 lastSelect=0
-optionFrame=Frame(root,padx=PAD,pady=PAD)
+keyFrame=Frame(root,padx=PAD,pady=PAD)
+keyFrame.pack(side='bottom',fill='x')
+mainFrame=Frame(root,padx=PAD,pady=PAD)
+mainFrame.pack(side='top',fill='x')
+optionFrame=Frame(mainFrame,padx=PAD,pady=PAD)
 optionFrame.pack(side='left',fill='both')
-rightFrame=Frame(root,padx=PAD,pady=PAD)
+rightFrame=Frame(mainFrame,padx=PAD,pady=PAD)
 rightFrame.pack(side='right',fill='both')
 selectedFrame=Frame(rightFrame)
 selectedFrame.pack(side='top')
 inputFrame=Frame(rightFrame)
 inputFrame.pack(side='top')
-
 
 value1=StringVar()
 value2=StringVar()
@@ -432,11 +476,21 @@ value3=StringVar()
 valueB=BooleanVar()
 valueC=StringVar()
 
+keyLabel=Label(keyFrame,text='Decryption Key(Hex separate by ","):')
+keyLabel.pack(side='top',anchor='w')
+keyVar=StringVar()
+tempKey=loadKey()
+if tempKey:
+    DECRYPT_KEY=tempKey
+keyVar.set(stringKey(DECRYPT_KEY))
+keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
+keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
+
 optionLabel=Label(optionFrame,text="Select option:")
 optionLabel.pack(side='top',anchor='w')
 optionVar=StringVar()
 optionVar.set(tool)
-optionList=Listbox(optionFrame,listvariable=optionVar,height=12)
+optionList=Listbox(optionFrame,listvariable=optionVar,height=10)
 optionList.selection_set(0)
 title=Label(selectedFrame,text=tool[0],font=('Fixdsys 14 bold'))
 title.pack()
@@ -444,8 +498,8 @@ option=UnpackScene()
 optionList.bind('<ButtonRelease-1>',select)
 optionList.pack(side='top',fill='y')
 
-startButton=Button(rightFrame,text="Start",command=start,width=BUTTON_WIDTH)
-startButton.pack(side='bottom',padx=2,pady=2,anchor='e')
+startButton=Button(keyFrame,text="Start",command=start,width=BUTTON_WIDTH)
+startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 
 root.mainloop()

@@ -34,13 +34,13 @@ def Check(scr):
 
 def main(argv):
 
-    if len(argv) < 3:
+    if len(argv)<3 or argv[1]=='' or argv[2]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\]")
-        return
+        return False
 
     inF=argv[1]+"\\"
     txtF=argv[2]+"\\"
-    if len(argv) < 4:
+    if len(argv)<4 or argv[3]=='':
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[1][argv[1].rfind("\\")+1:]+"_packed\\"
     else:
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[3]+"\\"
@@ -94,6 +94,7 @@ def main(argv):
         for x in range(0,header.count):
             output.write(string[x])
         output.close()
+    return True
 
 if __name__=="__main__":
     main(sys.argv)

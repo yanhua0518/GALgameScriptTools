@@ -23,18 +23,18 @@ class Header:
 
 def main(argv):
         
-    if len(argv)<2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <folder\> [output file]")
-        return
+        return False
 
     inF=argv[1]+"\\"
     inList=glob.glob(inF+"*.*")
     fileCount=len(inList)
     if fileCount<1:
         print("No file to pack!")
-        return
+        return False
     
-    if len(argv)<3:
+    if len(argv)<3 or argv[2]=='':
         outFN=(argv[1]+".pck").replace("\\.",".").replace("/.",".")
     else:
         outFN=argv[2]
@@ -77,6 +77,7 @@ def main(argv):
         output.write(file.read())
         file.close()
     output.close()
+    return True
 
 if __name__=="__main__":
     main(sys.argv)

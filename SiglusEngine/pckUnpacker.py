@@ -19,11 +19,11 @@ class Header:
 
 def main(argv):
         
-    if len(argv)<2:
+    if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <pck file> [output folder\]")
-        return
+        return False
 
-    if len(argv)<3:
+    if len(argv)<3 or argv[2]=='':
         outF=argv[1].replace(".pck","")+"\\"
     else:
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
@@ -33,14 +33,14 @@ def main(argv):
         f.read()
         f.close()
     except:
-        return
+        return False
 
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
     header=Header(scene)
     if not header.type==1:
         print("NOT a pck data file!")
-        return
+        return False
 
     if not os.path.exists(outF):
         os.makedirs(outF)
@@ -69,6 +69,7 @@ def main(argv):
         output.write(fileData)
         output.close()
     scene.close()
+    return True
 
 if __name__=="__main__":
     main(sys.argv)
