@@ -61,15 +61,17 @@ def start():
     global lastSelect,option,DECRYPT_KEY
     optionList.selection_set(lastSelect)
     try:
-        tempKey=setKey(keyVar.get())
-        DECRYPT_KEY=tempKey
+        if lastSelect<4:
+            tempKey=setKey(keyVar.get())
+            DECRYPT_KEY=tempKey
         check=option.run()
     except:
         messagebox.showerror("Error!","Error!\nKey is wrong?")
     else:
         if check:
             messagebox.showinfo("Notice","Finished!")
-            saveKey()
+            if lastSelect<4:
+                saveKey()
         else:
             messagebox.showwarning("Warning","Input error!")
 
@@ -455,7 +457,7 @@ class PackPck:
 root=Tk()
 root.title("Siglus Tools")
 root.geometry("640x300")
-root.resizable(False,False)
+#root.resizable(False,False)
 lastSelect=0
 keyFrame=Frame(root,padx=PAD,pady=PAD)
 keyFrame.pack(side='bottom',fill='x')
