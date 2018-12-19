@@ -381,7 +381,7 @@ class PackDbs:
         entry1.grid(row=1,column=0,padx=2)
         entry2.grid(row=3,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
-        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
+        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         valueC.set('17')
