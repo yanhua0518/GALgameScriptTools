@@ -6,7 +6,7 @@ otherTools里是 https://github.com/marcussacana/SiglusSceneManager 的工具，
 可以直接编辑ss和dbs（不推荐）。
 主要的是用它来搜索Key。
 
-处理Scene和Gameexe需要把py里面的key改成目标游戏的Key，默认的是“神待ちサナちゃん　DL版”。
+处理Scene和Gameexe需要把Decryption.py里面的key改成目标游戏的Key，默认的是“神待ちサナちゃん　DL版”。
 
 外挂了C++来处理，速度得到了飞跃性的提升（谜之声：那干嘛不直接用C写？——别闹，py才是灵魂啊！）
 
@@ -21,8 +21,11 @@ dbs也用上了C++，-c压缩参数同上。
 Dumper进行了文本过滤，过滤掉了纯英文的行，
 dbsDecrypt过滤掉了空行和数字。
 
-做了个临时的GUI，目前只是相当于选文件功能。
-整体优化了代码，用于被其他py调用。
+整体优化了代码， 现在可以用其他py调用。
+调用函数main(argv,key)或main(argv)。
+输入变量都是list。key为空list时使用默认Key。
+
+GUI基本完善，最后一次使用的Key会储存在SiglusKey.txt里，删除该文件恢复默认Key。
 
 ***
 ## Usage:
