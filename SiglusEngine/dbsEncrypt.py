@@ -131,7 +131,7 @@ def main(argv):
             else:
                 lineData[m].append(tempData)
     file.seek(header.fileSize)
-    dummy=file.read()
+    #dummy=file.read()
     file.close()
 
     index=0
@@ -196,19 +196,25 @@ def main(argv):
     dbs.seek(0)
     dbs.write(struct.pack('I',dbsSize))
     dbs.seek(0,2)
-    dbs.write(dummy)
+    #dbs.write(dummy)
+    dbs.write(bytes(32-dbsSize%32))
     dbsSize=dbs.tell()
-    dataB=Decrypt3(dbs.getvalue())
     '''
     dbsFile=open(outFN.replace('.new','.ori'),'wb')
     dbsFile.write(dbs.getvalue())
     dbsFile.close()
     '''
+    dataB=Decrypt3(dbs.getvalue())
     dbs.close()
     if comp:
         dataA=Compress(dataB,comp)
     else:
         dataA=FakeCompress(dataB)
+    '''
+    dbsFile=open(outFN.replace('.new','.cmp'),'wb')
+    dbsFile.write(dataA)
+    dbsFile.close()
+    '''
     data=Decrypt5(dataA)
 
     output=open(outFN,'wb')

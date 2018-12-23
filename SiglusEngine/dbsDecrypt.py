@@ -80,11 +80,11 @@ def main(argv):
     compSize,decompSize=struct.unpack('2I',dataA[:8])
     dataB=Decompress(dataA[8:],decompSize)
     dataC=Decrypt3(dataB)
-
+    
     output=open(argv[1]+'.out','wb')
     output.write(dataC)
     output.close()
-
+    
     file=open(argv[1]+'.out','rb')
     header=Header(file)
     file.seek(header.lineIndexOffset)
