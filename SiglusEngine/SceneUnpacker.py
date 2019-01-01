@@ -73,6 +73,7 @@ def main(argv,key):
     scene.seek(header.SceneDataOffset)
     SceneData=[]
     for n in range(0,header.SceneDataCount):
+        scene.seek(header.SceneDataOffset+SceneDataOffset[n])
         SceneData.append(scene.read(SceneDataLength[n]))
         
     scene.close()
