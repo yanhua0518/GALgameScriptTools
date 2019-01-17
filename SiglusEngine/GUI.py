@@ -63,7 +63,8 @@ def start():
     try:
         if lastSelect<4:
             tempKey=setKey(keyVar.get())
-            DECRYPT_KEY=tempKey
+            if tempKey:
+                DECRYPT_KEY=tempKey
         check=option.run()
     except:
         messagebox.showerror("Error!","Error!\nKey is wrong?")
