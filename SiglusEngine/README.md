@@ -27,6 +27,9 @@ dbsDecrypt过滤掉了空行和数字。
 
 GUI基本完善，最后一次使用的Key会储存在SiglusKey.txt里，删除该文件恢复默认Key。
 
+GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并以下拉列表形式出现。
+选择了已知Key将不会保存SiglusKey.txt。
+
 ***
 ## Usage:
 ```
