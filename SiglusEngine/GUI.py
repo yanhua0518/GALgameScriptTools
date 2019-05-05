@@ -6,6 +6,7 @@ import os
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
+from tkinter.ttk import Combobox
 import struct
 import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
 import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker
@@ -21,9 +22,11 @@ ENTRY_WIDTH=58
 BUTTON_WIDTH=6
 PAD=4
 lastDir=os.getcwd()
+typedKey=True
 DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
 KEY_FILE="SiglusKey.txt"
+
 
 def stringKey(key):
     keyHex=[]
@@ -57,6 +60,11 @@ def saveKey():
     file.close()
     return True
 
+def selectKey(value):
+    global typedKey
+    typedKey=False
+    keyVar.set(keyList[keySelect.current()])
+
 def start():
     global lastSelect,option,DECRYPT_KEY
     optionList.selection_set(lastSelect)
@@ -71,7 +79,7 @@ def start():
     else:
         if check:
             messagebox.showinfo("Notice","Finished!")
-            if lastSelect<4:
+            if lastSelect<4 and typedKey:
                 saveKey()
         else:
             messagebox.showwarning("Warning","Input error!")
@@ -478,16 +486,33 @@ value2=StringVar()
 value3=StringVar()
 valueB=BooleanVar()
 valueC=StringVar()
-
-keyLabel=Label(keyFrame,text='Decryption Key(Hex separate by ","):')
-keyLabel.pack(side='top',anchor='w')
 keyVar=StringVar()
 tempKey=loadKey()
+
+keyInfo=Frame(keyFrame)
+keyInfo.pack(side='top',anchor='w')
+keyLabel=Label(keyInfo,text='Decryption Key(Hex separate by ","):')
+keyLabel.pack(side='left',anchor='w')
+
 if tempKey:
     DECRYPT_KEY=tempKey
 keyVar.set(stringKey(DECRYPT_KEY))
 keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
+
+listFile=open("KeyList.txt",'r',1,'UTF-8')
+keyList=[]
+keyName=[]
+for line in listFile.readlines():
+    if line[-2:]=='：\n':
+        keyName.append(line[:-2])
+    elif line!='\n':
+        keyList.append(line[:-1])
+listFile.close()
+
+keySelect=Combobox(keyInfo,width=54,state='readonly',value=keyName)
+keySelect.bind("<<ComboboxSelected>>",selectKey)
+keySelect.pack(side='right',anchor='s')
 
 optionLabel=Label(optionFrame,text="Select option:")
 optionLabel.pack(side='top',anchor='w')
