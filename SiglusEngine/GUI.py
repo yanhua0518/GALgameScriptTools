@@ -65,6 +65,10 @@ def selectKey(value):
     typedKey=False
     keyVar.set(keyList[keySelect.current()])
 
+def unlock(value):
+    global typedKey
+    typedKey=True
+
 def start():
     global lastSelect,option,DECRYPT_KEY
     optionList.selection_set(lastSelect)
@@ -498,6 +502,7 @@ if tempKey:
     DECRYPT_KEY=tempKey
 keyVar.set(stringKey(DECRYPT_KEY))
 keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
+keyEntry.bind("<Control-KeyPress-V>",unlock)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
 
 listFile=open("KeyList.txt",'r',1,'UTF-8')
