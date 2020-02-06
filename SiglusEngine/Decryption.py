@@ -77,7 +77,7 @@ def Compress(string,level):
     return newString
 
 try:
-    dll=CDLL('Decryption.dll')
+    dll=CDLL(os.getcwd()+'\\Decryption.dll')
 except:
     print("Can't open Decryption.dll")
     quit()
