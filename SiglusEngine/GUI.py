@@ -3,6 +3,8 @@
 
 import sys
 import os
+import time
+import threading
 import subprocess
 from tkinter import *
 from tkinter.filedialog import *
@@ -92,33 +94,41 @@ def start():
         else:
             messagebox.showwarning("Warning","Input error!")
 
-def findKey():
-    global DECRYPT_KEY,typedKey
-    try:
+class findKey(threading.Thread):
+    def __init__(self):
+        global DECRYPT_KEY,typedKey,kfButton
+        super(findKey,self).__init__()
+        self.setDaemon(True)
+        self.signal=threading.Event()
+        self.signal.set()
+    def stop(self):
+        self.signal.clear()
+    def run(self):
         f=subprocess.Popen(os.getcwd()+"\\skf.exe",shell=True,
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT)
-        check=messagebox.askokcancel("Finding Key",
-                               "Start the game \nand wait for a moment.")
-        if not check:
-            f.kill()
-            return
+            
+        kfButton['text']="Finding..."
         while f.poll()==None:
-            check=messagebox.askretrycancel("Finding Key","Still finding...")
-            if not check:
+            time.sleep(1)
+            if not self.signal.isSet():
                 f.kill()
+                kfButton['text']="Find Key"
                 return
-    except:
-        messagebox.showerror("Error!","Error!\nCan't start skf.exe")
-        return
-    else:
-        keyStr=f.stdout.readlines()[6].decode()
         try:
+            output=f.stdout.readlines()
+            #print(output)
+            keyIndex=output.index(b'Keys found:\n')+1
+            keyStr=output[keyIndex].decode()
             newKey=setKey(keyStr)
         except:
-            messagebox.showwarning("Warning",
+            if output[0][:6]==b'Please':
+                messagebox.showwarning("Warning",
                                    "Can't find key!\nPlease try again.")
+            else:
+                messagebox.showerror("Error!","Error!\nCan't start skf.exe")
+            kfButton['text']="Find Key"
             return
         else:
             messagebox.showinfo("Notice","Key Found!")
@@ -128,6 +138,15 @@ def findKey():
             if hasList:
                 keySelect.current(0)
                 keyList[0]=stringKey(DECRYPT_KEY)
+            kfButton['text']="Find Key"
+
+def clickFindKey():
+    global finding
+    if kfButton['text']=="Find Key":
+        finding=findKey()
+        finding.start()
+    else:
+        finding.stop()
 
 def select(event):
     global lastSelect,option,title
@@ -553,7 +572,7 @@ except:
     hasSkf=False
 else:
     hasSkf=True
-    kfButton=Button(keyInfo,text="Find Key",command=findKey,width=8)
+    kfButton=Button(keyInfo,text="Find Key",command=clickFindKey,width=8)
     kfButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 keyLabel=Label(keyInfo,text='Decryption Key(Hex separate by ","):')
