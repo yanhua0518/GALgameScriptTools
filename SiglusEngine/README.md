@@ -30,6 +30,9 @@ GUI基本完善，最后一次使用的Key会储存在SiglusKey.txt里，删除�
 GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并以下拉列表形式出现。
 选择了已知Key将不会保存SiglusKey.txt。
 
+在GUI中集成了 https://github.com/renanc1332/SiglusTranslationToolkit 的skf用于直接搜索Key，不再需要另开程序搜索。
+注意：必须进行过解包或封包操作才会保存当前Key。所以请注意手动保存新查找到的Key。
+
 ***
 ## Usage:
 ```
