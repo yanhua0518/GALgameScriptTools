@@ -3,6 +3,7 @@
 
 import sys
 import os
+import subprocess
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
@@ -12,7 +13,7 @@ import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
 import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker
 
 
-tool=["Unpack Scene","Pack Scene","Unpack Gameexe","Pack Gameexe",
+tool=["Unpack Scene","Pack Scene","Decrypt Gameexe","Encrypt Gameexe",
         "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck"]
 command=["SceneUnpacker.py","ScenePacker.py","GameexeUnpacker.py",
          "GameexePacker.py","ssDumper.py","ssPacker.py",
@@ -23,6 +24,8 @@ BUTTON_WIDTH=6
 PAD=4
 lastDir=os.getcwd()
 typedKey=True
+hasList=False
+hasSkf=False
 DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
 KEY_FILE="SiglusKey.txt"
@@ -89,6 +92,42 @@ def start():
         else:
             messagebox.showwarning("Warning","Input error!")
 
+def findKey():
+    global DECRYPT_KEY,typedKey
+    try:
+        f=subprocess.Popen(os.getcwd()+"\\skf.exe",
+                           stdin=subprocess.PIPE,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
+        check=messagebox.askokcancel("Finding Key",
+                               "Start the game \nand wait for a moment.")
+        if not check:
+            f.kill()
+            return
+        while f.poll()==None:
+            check=messagebox.askretrycancel("Finding Key","Still finding...")
+            if not check:
+                f.kill()
+                return
+    except:
+        messagebox.showerror("Error!","Error!\nCan't start skf.exe")
+        return
+    else:
+        keyStr=f.stdout.readlines()[6].decode()
+        try:
+            newKey=setKey(keyStr)
+        except:
+            messagebox.showwarning("Warning",
+                                   "Can't find key!\nPlease try again.")
+            return
+        else:
+            DECRYPT_KEY=newKey
+            typedKey=True
+            keyVar.set(keyStr)
+            if hasList:
+                keySelect.current(0)
+                keyList[0]=stringKey(DECRYPT_KEY)
+
 def select(event):
     global lastSelect,option,title
     selected=optionList.curselection()[0]
@@ -125,24 +164,24 @@ def clear():
         name1.grid_forget()
         entry1.grid_forget()
         button1.grid_forget()
-    except:True
+    except:pass
     try:
         name2.grid_forget()
         entry2.grid_forget()
         button2.grid_forget()
-    except:True
+    except:pass
     try:
         name3.grid_forget()
         entry3.grid_forget()
         button3.grid_forget()
-    except:True
+    except:pass
     try:
         buttonB.grid_forget()
-    except:True
+    except:pass
     try:
         nameC.grid_forget()
         entryC.grid_forget()
-    except:True
+    except:pass
 
 def selectFile(v):
     global lastDir
@@ -470,7 +509,7 @@ class PackPck:
 
 root=Tk()
 root.title("Siglus Tools")
-root.geometry("640x300")
+root.geometry("640x320")
 #root.resizable(False,False)
 lastSelect=0
 keyFrame=Frame(root,padx=PAD,pady=PAD)
@@ -495,9 +534,9 @@ keyVar=StringVar()
 tempKey=loadKey()
 
 keyInfo=Frame(keyFrame)
-keyInfo.pack(side='top',anchor='w')
-keyLabel=Label(keyInfo,text='Decryption Key(Hex separate by ","):')
-keyLabel.pack(side='left',anchor='w')
+keyInfo.pack(side='top',anchor='w',fill='x')
+startButton=Button(keyFrame,text="Start",command=start,width=6)
+startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 if tempKey:
     DECRYPT_KEY=tempKey
@@ -505,23 +544,42 @@ keyVar.set(stringKey(DECRYPT_KEY))
 keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
 keyEntry.bind("<Control-Key-v>",unlock)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
+
+try:
+    f=subprocess.Popen(os.getcwd()+"\\skf.exe")
+    f.kill()
+except:
+    hasSkf=False
+else:
+    hasSkf=True
+    kfButton=Button(keyInfo,text="Find Key",command=findKey,width=8)
+    kfButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
+
+keyLabel=Label(keyInfo,text='Decryption Key(Hex separate by ","):')
+keyLabel.pack(side='left',anchor='w')
+
 try:
     listFile=open(KEY_LIST,'r',1,'UTF-8')
 except:
-    print("Can't find key list file!")
+    hasList=False
 else:
-    keyList=[]
-    keyName=[]
+    hasList=True
+    keyList=[stringKey(DECRYPT_KEY)]
+    keyName=[""]
     for line in listFile.readlines():
         if line[-2:]=='：\n':
             keyName.append(line[:-2])
         elif line!='\n':
             keyList.append(line[:-1])
     listFile.close()
-
-    keySelect=Combobox(keyInfo,width=54,state='readonly',value=keyName)
+    if hasSkf:
+        listWidth=45
+    else:
+        listWidth=55
+    keySelect=Combobox(keyInfo,width=listWidth,state='readonly',value=keyName)
     keySelect.bind("<<ComboboxSelected>>",selectKey)
-    keySelect.pack(side='right',anchor='s')
+    keySelect.current(0)
+    keySelect.pack(side='left',anchor='e')
 
 optionLabel=Label(optionFrame,text="Select option:")
 optionLabel.pack(side='top',anchor='w')
@@ -534,9 +592,5 @@ title.pack()
 option=UnpackScene()
 optionList.bind('<ButtonRelease-1>',select)
 optionList.pack(side='top',fill='y')
-
-startButton=Button(keyFrame,text="Start",command=start,width=BUTTON_WIDTH)
-startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
-
 
 root.mainloop()
