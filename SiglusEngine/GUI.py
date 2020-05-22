@@ -121,6 +121,7 @@ def findKey():
                                    "Can't find key!\nPlease try again.")
             return
         else:
+            messagebox.showinfo("Notice","Key Found!")
             DECRYPT_KEY=newKey
             typedKey=True
             keyVar.set(keyStr)
