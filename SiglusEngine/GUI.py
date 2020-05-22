@@ -95,7 +95,7 @@ def start():
 def findKey():
     global DECRYPT_KEY,typedKey
     try:
-        f=subprocess.Popen(os.getcwd()+"\\skf.exe",
+        f=subprocess.Popen(os.getcwd()+"\\skf.exe",shell=True,
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT)
