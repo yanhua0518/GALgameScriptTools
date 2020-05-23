@@ -7,14 +7,15 @@ from tkinter.filedialog import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
 import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
-import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker
+import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker,omvCuter
 
 
 tool=["Unpack Scene","Pack Scene","Decrypt Gameexe","Encrypt Gameexe",
-        "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck"]
-command=["SceneUnpacker.py","ScenePacker.py","GameexeUnpacker.py",
-         "GameexePacker.py","ssDumper.py","ssPacker.py",
-         "dbsDecrypt.py","dbsEncrypt.py","pckUnpacker.py","pckPacker.py"]
+      "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck",
+      "Cut OMV header"]
+command=["SceneUnpacker","ScenePacker","GameexeUnpacker","GameexePacker",
+         "ssDumper","ssPacker","dbsDecrypt","dbsEncrypt",
+         "pckUnpacker","pckPacker","omvCuter"]
 
 ENTRY_WIDTH=58
 BUTTON_WIDTH=6
@@ -103,11 +104,18 @@ class findKey(threading.Thread):
     def stop(self):
         self.signal.clear()
     def run(self):
-        f=subprocess.Popen(os.getcwd()+"\\skf.exe",
-                           creationflags=subprocess.CREATE_NO_WINDOW,
-                           stdin=subprocess.PIPE,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT)
+        try:
+            f=subprocess.Popen(os.getcwd()+"\\skf.exe",
+                               creationflags=subprocess.CREATE_NO_WINDOW,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+        except Exception as e:
+            messagebox.showerror("Error!","Can't start skf.exe!\n"+e)
+        cmdText['state']='normal'
+        print("Please start the game and wait for a moment...\n"+
+              "Click the button again to stop.")
+        cmdText['state']='disabled'
         n=1
         while f.poll()==None:
             kfButton['text']="Finding"+'.'*n
@@ -128,7 +136,7 @@ class findKey(threading.Thread):
                 messagebox.showwarning("Warning",
                                    "Can't find key!\nPlease try again.")
             else:
-                messagebox.showerror("Error!","Error!\nCan't start skf.exe")
+                messagebox.showerror("Error!","Can't start skf.exe!")
             kfButton['text']="Find Key"
             return
         else:
@@ -156,26 +164,7 @@ def select(event):
         return
     else:
         lastSelect=selected
-    if selected==0:
-        option=UnpackScene()
-    elif selected==1:
-        option=PackScene()
-    elif selected==2:
-        option=UnpackGameexe()
-    elif selected==3:
-        option=PackGameexe()
-    elif selected==4:
-        option=DumpSs()
-    elif selected==5:
-        option=PackSs()
-    elif selected==6:
-        option=DumpDbs()
-    elif selected==7:
-        option=PackDbs()
-    elif selected==8:
-        option=UnpackPck()
-    elif selected==9:
-        option=PackPck()
+    option=eval("set"+command[selected]+"()")
     title.pack_forget()
     title=Label(selectedFrame,text=tool[selected],font=('Fixdsys 14 bold'))
     title.pack()
@@ -229,6 +218,7 @@ def running(cmd,key):
     else:
         code=cmd[0]+".main(cmd,key)"
     cmdText['state']='normal'
+    print('Running "'+cmd[0]+'"...')
     if singleProcess:
         startButton['state']='disabled'
     check=eval(code)
@@ -241,7 +231,33 @@ def running(cmd,key):
     cmdText['state']='disabled'
     startButton['state']='normal'
 
-class UnpackScene:
+
+def runningExe(cmd):
+    cmdText['state']='normal'
+    if singleProcess:
+        startButton['state']='disabled'
+    print('Running "'+cmd[0:cmd.find('.exe')+4]+'"...')
+    try:
+        exe=subprocess.Popen(os.getcwd()+"\\"+cmd,bufsize=1,
+                             creationflags=subprocess.CREATE_NO_WINDOW,
+                             stdin=subprocess.PIPE,stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,universal_newlines=True)
+        for line in iter(exe.stdout.readline,''):
+            print(line.replace('\n',''))
+    except Exception as e:
+        messagebox.showerror("Error!","Can't create process!\n"+e)
+    else:
+        if exe.stderr.readlines() or line==[]:
+            messagebox.showerror("Error!","Failed!")
+        else:
+            if line[:5]=="error":
+                messagebox.showwarning("Warning",line)
+            else:
+                messagebox.showinfo("Notice",line)
+    cmdText['state']='disabled'
+    startButton['state']='normal'
+
+class setSceneUnpacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -268,7 +284,7 @@ class UnpackScene:
         runPy.start()
         return 
 
-class PackScene:
+class setScenePacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -319,7 +335,7 @@ class PackScene:
         runPy.start()
         return 
         
-class UnpackGameexe:
+class setGameexeUnpacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -346,7 +362,7 @@ class UnpackGameexe:
         runPy.start()
         return 
 
-class PackGameexe:
+class setGameexePacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -395,7 +411,7 @@ class PackGameexe:
         runPy.start()
         return 
 
-class DumpSs:
+class setssDumper:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -422,7 +438,7 @@ class DumpSs:
         runPy.start()
         return 
 
-class PackSs:
+class setssPacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -456,7 +472,7 @@ class PackSs:
         runPy.start()
         return 
 
-class DumpDbs:
+class setdbsDecrypt:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -476,7 +492,7 @@ class DumpDbs:
         runPy.start()
         return 
 
-class PackDbs:
+class setdbsEncrypt:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -520,7 +536,7 @@ class PackDbs:
         runPy.start()
         return 
 
-class UnpackPck:
+class setpckUnpacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -547,7 +563,7 @@ class UnpackPck:
         runPy.start()
         return 
         
-class PackPck:
+class setpckPacker:
     def __init__(self):
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
@@ -574,6 +590,57 @@ class PackPck:
         runPy.start()
         return 
 
+class setomvCuter:
+    def __init__(self):
+        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
+        global buttonB,nameC,entryC
+        global value1,value2,value3,valueB,valueC
+        clear()
+        name1=Label(inputFrame,text="OMV file:")
+        name1.grid(row=0,padx=2,sticky='w')
+        value1.set("*.omv")
+        entry1=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value1)
+        entry1.grid(row=1,column=0,padx=2)
+        button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
+        button1.grid(row=1,column=1,padx=2)
+    def run(self):
+        cmd=["omvCuter",value1.get()]
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
+
+class setsiglusOmv:
+    def __init__(self):
+        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
+        global buttonB,nameC,entryC
+        global value1,value2,value3,valueB,valueC
+        clear()
+        name1=Label(inputFrame,text="ogv file(Must be YUV444p):")
+        name2=Label(inputFrame,text="OMV file:")
+        name1.grid(row=0,padx=2,sticky='w')
+        name2.grid(row=2,padx=2,sticky='w')
+        value1.set("*.ogv")
+        value2.set("")
+        entry1=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value1)
+        entry2=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value2)
+        entry1.grid(row=1,column=0,padx=2)
+        entry2.grid(row=3,column=0,padx=2)
+        button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
+        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value2))
+        button1.grid(row=1,column=1,padx=2)
+        button2.grid(row=3,column=1,padx=2)
+    def run(self):
+        cmd='siglusomv.exe "'+value1.get()+'" "'
+        if not value2.get():
+            cmd+=value1.get().replace('.ogv','.omv')+'"'
+        else:
+            cmd+=value2.get()+'"'
+        runExe=threading.Thread(target=runningExe,args=(cmd.replace("*",""),))
+        runExe.setDaemon(True)
+        runExe.start()
+        return 
+
 class StdoutRedirector(object):
 
     def __init__(self, text_area):
@@ -589,11 +656,24 @@ root.geometry("640x480")
 #root.resizable(False,False)
 lastSelect=0
 
+try:
+    f=subprocess.Popen(os.getcwd()+"\\siglusomv.exe")
+    f.kill()
+except:pass
+else:
+    tool.append("Pack OMV")
+    command.append("siglusOmv")
+
 cmdFrame=Frame(root)
 cmdFrame.pack(side='bottom',fill='both',padx=PAD,pady=PAD)
-cmdText=Text(cmdFrame,wrap='word',state='disabled',height=12,bd=2)
+cmdScroll=Scrollbar(cmdFrame,bd=2)
+cmdScroll.pack(side='right',fill='y',padx=PAD,pady=PAD)
+cmdText=Text(cmdFrame,wrap='word',state='disabled',
+             yscrollcommand=cmdScroll.set,
+             width=86,height=22-len(command),bd=2)
 sys.stdout=StdoutRedirector(cmdText)
-cmdText.pack(side='bottom',fill='both')
+cmdText.pack(side='left',fill='x')
+cmdScroll.config(command=cmdText.yview)
 
 keyFrame=Frame(root)
 keyFrame.pack(side='bottom',fill='x')
@@ -668,11 +748,11 @@ optionLabel=Label(optionFrame,text="Select option:")
 optionLabel.pack(side='top',anchor='w')
 optionVar=StringVar()
 optionVar.set(tool)
-optionList=Listbox(optionFrame,listvariable=optionVar,height=10)
+optionList=Listbox(optionFrame,listvariable=optionVar,height=len(command))
 optionList.selection_set(0)
 title=Label(selectedFrame,text=tool[0],font=('Fixdsys 14 bold'))
 title.pack()
-option=UnpackScene()
+option=setSceneUnpacker()
 optionList.bind('<ButtonRelease-1>',select)
 optionList.pack(side='top',fill='y')
 
