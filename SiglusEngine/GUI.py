@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 # For Windows OS Only....
 
-import sys
-import os
-import time
-import threading
-import subprocess
+import sys,os,time,struct,threading,subprocess,signal
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
-import struct
 import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
 import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker
 
@@ -28,10 +23,12 @@ lastDir=os.getcwd()
 typedKey=True
 hasList=False
 hasSkf=False
+singleProcess=False
 DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
 KEY_FILE="SiglusKey.txt"
 KEY_LIST="KeyList.txt"
+cmdOutput=sys.stdout
 
 
 def stringKey(key):
@@ -86,6 +83,7 @@ def start():
         check=option.run()
     except:
         messagebox.showerror("Error!","Error!\nKey is wrong?")
+    '''
     else:
         if check:
             messagebox.showinfo("Notice","Finished!")
@@ -93,6 +91,7 @@ def start():
                 saveKey()
         else:
             messagebox.showwarning("Warning","Input error!")
+    '''
 
 class findKey(threading.Thread):
     def __init__(self):
@@ -104,13 +103,15 @@ class findKey(threading.Thread):
     def stop(self):
         self.signal.clear()
     def run(self):
-        f=subprocess.Popen(os.getcwd()+"\\skf.exe",shell=True,
+        f=subprocess.Popen(os.getcwd()+"\\skf.exe",
+                           creationflags=subprocess.CREATE_NO_WINDOW,
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.STDOUT)
-            
-        kfButton['text']="Finding..."
+        n=1
         while f.poll()==None:
+            kfButton['text']="Finding"+'.'*n
+            n=n%3+1
             time.sleep(1)
             if not self.signal.isSet():
                 f.kill()
@@ -222,6 +223,23 @@ def selectFolder(v):
         v.set(temp)
         lastDir=temp
 
+def running(cmd,key):
+    if key==None:
+        code=cmd[0]+".main(cmd)"
+    else:
+        code=cmd[0]+".main(cmd,key)"
+    cmdText['state']='normal'
+    if singleProcess:
+        startButton['state']='disabled'
+    check=eval(code)
+    if check:
+        messagebox.showinfo("Notice","Finished!")
+        if lastSelect<4 and typedKey:
+            saveKey()
+    else:
+        messagebox.showwarning("Warning","Input error!")
+    cmdText['state']='disabled'
+    startButton['state']='normal'
 
 class UnpackScene:
     def __init__(self):
@@ -245,7 +263,10 @@ class UnpackScene:
         button2.grid(row=3,column=1,padx=2)
     def run(self):
         cmd=["SceneUnpacker",value1.get(),value2.get()]
-        return SceneUnpacker.main(cmd,DECRYPT_KEY)
+        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class PackScene:
     def __init__(self):
@@ -293,7 +314,10 @@ class PackScene:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
-        return ScenePacker.main(cmd,DECRYPT_KEY)
+        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
         
 class UnpackGameexe:
     def __init__(self):
@@ -317,7 +341,10 @@ class UnpackGameexe:
         button2.grid(row=3,column=1,padx=2)
     def run(self):
         cmd=["GameexeUnpacker",value1.get(),value2.get()]
-        return GameexeUnpacker.main(cmd,DECRYPT_KEY)
+        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class PackGameexe:
     def __init__(self):
@@ -363,7 +390,10 @@ class PackGameexe:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
-        return GameexePacker.main(cmd,DECRYPT_KEY)
+        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class DumpSs:
     def __init__(self):
@@ -387,7 +417,10 @@ class DumpSs:
         button2.grid(row=3,column=1,padx=2)
     def run(self):
         cmd=["ssDumper",value1.get(),value2.get()]
-        return ssDumper.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class PackSs:
     def __init__(self):
@@ -418,7 +451,10 @@ class PackSs:
         button3.grid(row=5,column=1,padx=2)
     def run(self):
         cmd=["ssPacker",value1.get(),value2.get(),value3.get()]
-        return ssPacker.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class DumpDbs:
     def __init__(self):
@@ -435,7 +471,10 @@ class DumpDbs:
         button1.grid(row=1,column=1,padx=2)
     def run(self):
         cmd=["dbsDecrypt",value1.get()]
-        return dbsDecrypt.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class PackDbs:
     def __init__(self):
@@ -476,7 +515,10 @@ class PackDbs:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
-        return dbsEncrypt.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
 class UnpackPck:
     def __init__(self):
@@ -500,7 +542,10 @@ class UnpackPck:
         button2.grid(row=3,column=1,padx=2)
     def run(self):
         cmd=["pckUnpacker",value1.get(),value2.get()]
-        return pckUnpacker.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
         
 class PackPck:
     def __init__(self):
@@ -524,17 +569,35 @@ class PackPck:
         button2.grid(row=3,column=1,padx=2)
     def run(self):
         cmd=["pckPacker",value1.get(),value2.get()]
-        return pckPacker.main(cmd)
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
 
+class StdoutRedirector(object):
+
+    def __init__(self, text_area):
+        self.text_area = text_area
+
+    def write(self, str):
+        self.text_area.insert(END, str)
+        self.text_area.see(END)
 
 root=Tk()
 root.title("Siglus Tools")
-root.geometry("640x320")
+root.geometry("640x480")
 #root.resizable(False,False)
 lastSelect=0
-keyFrame=Frame(root,padx=PAD,pady=PAD)
+
+cmdFrame=Frame(root)
+cmdFrame.pack(side='bottom',fill='both',padx=PAD,pady=PAD)
+cmdText=Text(cmdFrame,wrap='word',state='disabled',height=12,bd=2)
+sys.stdout=StdoutRedirector(cmdText)
+cmdText.pack(side='bottom',fill='both')
+
+keyFrame=Frame(root)
 keyFrame.pack(side='bottom',fill='x')
-mainFrame=Frame(root,padx=PAD,pady=PAD)
+mainFrame=Frame(root)
 mainFrame.pack(side='top',fill='x')
 optionFrame=Frame(mainFrame,padx=PAD,pady=PAD)
 optionFrame.pack(side='left',fill='both')
@@ -555,7 +618,7 @@ tempKey=loadKey()
 
 keyInfo=Frame(keyFrame)
 keyInfo.pack(side='top',anchor='w',fill='x')
-startButton=Button(keyFrame,text="Start",command=start,width=6)
+startButton=Button(keyFrame,text="Start",command=start,width=7)
 startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 if tempKey:
@@ -593,9 +656,9 @@ else:
             keyList.append(line[:-1])
     listFile.close()
     if hasSkf:
-        listWidth=45
+        listWidth=46
     else:
-        listWidth=55
+        listWidth=56
     keySelect=Combobox(keyInfo,width=listWidth,state='readonly',value=keyName)
     keySelect.bind("<<ComboboxSelected>>",selectKey)
     keySelect.current(0)
@@ -614,3 +677,4 @@ optionList.bind('<ButtonRelease-1>',select)
 optionList.pack(side='top',fill='y')
 
 root.mainloop()
+sys.stdout=cmdOutput
