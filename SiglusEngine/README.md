@@ -37,7 +37,7 @@ GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并
 在GUI中集成了 https://github.com/jansonseth/Summer-Pockets-Tools 的siglusomv用于封装omv。
 顺便添加了砍掉omv的文件头变成ogv的功能。
 
-为ssDumper添加了-a命令不进行文本过滤。
+为导出ss和dbs添加了-a命令不进行文本过滤。
 
 ***
 ## Usage:
