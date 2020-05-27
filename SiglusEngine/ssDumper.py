@@ -24,7 +24,7 @@ class Header:
         H.index=H.headerList[2]
         H.count=H.headerList[3]
         H.offset=H.headerList[4]
-        H.datacount=H.headerList[5]
+        H.dataCount=H.headerList[5]
 
 def Check(scr):
     for char in scr:
@@ -33,9 +33,14 @@ def Check(scr):
     return False
 
 def main(argv):
-
+    if argv.count('-a')>0:
+        dumpAll=True
+        argv.remove('-a')
+    else:
+        dumpAll=False
+    
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a]")
         return False
 
     inF=argv[1]+"\\"
@@ -66,7 +71,7 @@ def main(argv):
             file.seek(header.offset+offset[x]*2,0)
             string=file.read(length[x]*2)
             text=Decrypt(string,length[x],x).decode("UTF-16")
-            if not Check(text):
+            if not Check(text) and not dumpAll:
                 continue
             outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
             output.write(outLine)

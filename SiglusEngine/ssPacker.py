@@ -24,7 +24,7 @@ class Header:
         H.index=H.headerList[2]
         H.count=H.headerList[3]
         H.offset=H.headerList[4]
-        H.datacount=H.headerList[5]
+        H.dataCount=H.headerList[5]
 
 def Check(scr):
     for char in scr:
@@ -76,7 +76,7 @@ def main(argv):
             if not line[0]==u"●":
                 continue
             index=int(line[1:line.find("●",1)])
-            text=line[line.find("●",1)+1:-1]
+            text=line[line.find("●",1)+1:].replace("\n","")
             length[index]=len(text)
             string[index]=Decrypt(text.encode("UTF-16")[2:],length[index],index)
         txt.close()
