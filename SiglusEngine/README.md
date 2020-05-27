@@ -54,4 +54,10 @@ dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]]
 
 pckUnpacker.py <pck file> [output folder\]
 pckPacker.py <folder\> [output file]
+
+omvCuter.py <omv file> [output file]
+
+siglusomv.exe <ogv file(must be YUV444p)> <omv file>
+
+skf.exe (Just run it and start the game)
 ```
