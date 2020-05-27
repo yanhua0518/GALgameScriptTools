@@ -52,10 +52,10 @@ class Header:
         
 def main(argv):
     if argv.count('-a')>0:
-        dumpAll=True
+        noDump=True
         argv.remove('-a')
     else:
-        dumpAll=False
+        noDump=False
 
     if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file> [-a]")
@@ -138,11 +138,11 @@ def main(argv):
         for n in range(0,header.dataCount):
             tempIndex=dataIndex[n]
             tempData=lineData[m][n]
-            if dataType[n]==0x53 and (tempData!='' or dumpAll):
+            if dataType[n]==0x53 and (tempData!='' or noDump):
                 txt.write('○%.2d○'%tempIndex+tempData+'\n●%.2d●'%tempIndex+lineData[m][n]+'\n\n')
             
             #int data:
-            elif dataType[n]==0x56 and dumpAll:
+            elif dataType[n]==0x56 and noDump:
                 txt.write('{%.2d}'%tempIndex+str(tempData)+'\n<%.2d>'%tempIndex+str(tempData)+'\n\n')
             
         txt.write('\n')

@@ -432,7 +432,7 @@ class setssDumper:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Dump all data",variable=valueB)
+        buttonB=Checkbutton(inputFrame,text="Export all data",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
         cmd=["ssDumper",value1.get(),value2.get()]
@@ -491,7 +491,7 @@ class setdbsDecrypt:
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
         valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Dump all data",variable=valueB)
+        buttonB=Checkbutton(inputFrame,text="Export all data",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
         cmd=["dbsDecrypt",value1.get()]

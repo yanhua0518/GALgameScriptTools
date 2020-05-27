@@ -34,10 +34,10 @@ def Check(scr):
 
 def main(argv):
     if argv.count('-a')>0:
-        dumpAll=True
+        noDump=True
         argv.remove('-a')
     else:
-        dumpAll=False
+        noDump=False
     
     if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a]")
@@ -71,7 +71,7 @@ def main(argv):
             file.seek(header.offset+offset[x]*2,0)
             string=file.read(length[x]*2)
             text=Decrypt(string,length[x],x).decode("UTF-16")
-            if not Check(text) and not dumpAll:
+            if not Check(text) and not noDump:
                 continue
             outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
             output.write(outLine)
