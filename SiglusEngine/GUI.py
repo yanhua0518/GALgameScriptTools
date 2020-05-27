@@ -490,8 +490,13 @@ class setdbsDecrypt:
         entry1.grid(row=1,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
+        valueB.set(False)
+        buttonB=Checkbutton(inputFrame,text="Dump all data",variable=valueB)
+        buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
         cmd=["dbsDecrypt",value1.get()]
+        if valueB.get():
+            cmd.append("-a")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()

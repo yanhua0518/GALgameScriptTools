@@ -51,9 +51,14 @@ class Header:
         H.textOffset=H.headerList[5]
         
 def main(argv):
+    if argv.count('-a')>0:
+        dumpAll=True
+        argv.remove('-a')
+    else:
+        dumpAll=False
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file>")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file> [-a]")
         return False
 
     try:
@@ -133,13 +138,13 @@ def main(argv):
         for n in range(0,header.dataCount):
             tempIndex=dataIndex[n]
             tempData=lineData[m][n]
-            if dataType[n]==0x53 and tempData!='':
+            if dataType[n]==0x53 and (tempData!='' or dumpAll):
                 txt.write('○%.2d○'%tempIndex+tempData+'\n●%.2d●'%tempIndex+lineData[m][n]+'\n\n')
-            '''
+            
             #int data:
-            elif dataType[n]==0x56:
-                txt.write('<%.2d>'%tempIndex+str(tempData)+'\n')
-            '''
+            elif dataType[n]==0x56 and dumpAll:
+                txt.write('{%.2d}'%tempIndex+str(tempData)+'\n<%.2d>'%tempIndex+str(tempData)+'\n\n')
+            
         txt.write('\n')
     txt.close()
     return True
