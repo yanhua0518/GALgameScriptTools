@@ -7,7 +7,7 @@ import os
 def main(argv):
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <OMV file\> [output\]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <OMV file> [output file]")
         return False
     elif len(argv)>2 and arfv[2]:
         ogvFN=argv[2]
