@@ -112,6 +112,7 @@ class findKey(threading.Thread):
                                stderr=subprocess.STDOUT)
         except Exception as e:
             messagebox.showerror("Error!","Can't start skf.exe!\n"+e)
+            return
         cmdText['state']='normal'
         print("Please start the game and wait for a moment...\n"+
               "Click the button again to stop.")
