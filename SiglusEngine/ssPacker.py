@@ -71,7 +71,12 @@ def main(argv):
         file.seek(header.offset)
         ssData=file.read()
         file.close()
-        txt=open(txtFN,'r',1,"UTF-8")
+        try:
+            txt=open(txtFN,'r',1,"UTF-8")
+            if txt.read(1)!="\ufeff":
+                txt.seek(0)
+        except:
+            continue
         for line in txt.readlines():
             if not line[0]==u"●":
                 continue
