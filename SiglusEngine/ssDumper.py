@@ -69,7 +69,8 @@ def main(argv):
     for inFN in glob.glob(inF+"*.ss"):
         print(inFN)
         if xlsxMode:
-            sheet=inFN[inFN.rfind("\\")+1:]
+            name=inFN[inFN.rfind("\\")+1:]
+            sheet=name[:31]
             if not singleXlsx:
                 outXLS=outF+inFN[inFN.rfind("\\")+1:]+".xlsx"
                 workBook=openpyxl.Workbook()
@@ -80,7 +81,11 @@ def main(argv):
             workSheet.column_dimensions['A'].width=8
             workSheet.column_dimensions['B'].width=64
             workSheet.column_dimensions['C'].width=64
-            workSheet.append(["Index","Text","Translation"])
+            if name!=sheet:
+                tempName=name
+            else:
+                tempName=""
+            workSheet.append(["Index","Text","Translation",tempName])
         else:
             outFN=outF+inFN[inFN.rfind("\\")+1:]+".txt"
             output=open(outFN,'w',1,"UTF-8")
