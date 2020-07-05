@@ -39,6 +39,9 @@ GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并
 
 为导出ss和dbs添加了-a命令不进行文本过滤。
 
+增加把ss导出为excel文件的功能（暂时不支持导入）。
+-x命令导出xlsx，使用-s导出为单个xlsx文件。
+
 ***
 ## Usage:
 ```
@@ -48,7 +51,7 @@ ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
 GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
 GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]]
 
-ssDumper.py <Scene\> [text\] [-a]
+ssDumper.py <Scene\> [text\] [-a] [-x [-s]]
 ssPacker.py <Scene\> <text\> [output\]
 
 dbsDecrypt.py <dbs file>
