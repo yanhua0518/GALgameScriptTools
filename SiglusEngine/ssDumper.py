@@ -69,12 +69,13 @@ def main(argv):
     for inFN in glob.glob(inF+"*.ss"):
         print(inFN)
         if xlsxMode:
+            sheet=inFN[inFN.rfind("\\")+1:]
             if not singleXlsx:
                 outXLS=outF+inFN[inFN.rfind("\\")+1:]+".xlsx"
                 workBook=openpyxl.Workbook()
                 workSheet=workBook.active
+                workSheet.title=sheet
             else:
-                sheet=inFN[inFN.rfind("\\")+1:]
                 workSheet=workBook.create_sheet(sheet)
             workSheet.column_dimensions['A'].width=8
             workSheet.column_dimensions['B'].width=64
