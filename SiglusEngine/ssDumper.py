@@ -6,6 +6,7 @@ import os
 import glob
 import struct
 import unicodedata
+import openpyxl
 from Decryption import Decrypt
 
 class Header:
@@ -38,9 +39,19 @@ def main(argv):
         argv.remove('-a')
     else:
         noDump=False
+    if argv.count('-x')>0:
+        xlsxMode=True
+        argv.remove('-x')
+    else:
+        xlsxMode=False
+    if argv.count('-s')>0:
+        singleXlsx=True
+        argv.remove('-s')
+    else:
+        singleXlsx=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a] [-x] [-s]")
         return False
 
     inF=argv[1]+"\\"
@@ -49,12 +60,30 @@ def main(argv):
     else:
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
 
-    if not os.path.exists(outF):
+    if not singleXlsx and not os.path.exists(outF):
         os.makedirs(outF)
-
+    if xlsxMode and singleXlsx:
+        workBook=openpyxl.Workbook()
+        outXLS=outF[:outF.rfind("\\")]+".xlsx"
+    
     for inFN in glob.glob(inF+"*.ss"):
         print(inFN)
-        outFN=outF+inFN[inFN.rfind("\\")+1:]+".txt"
+        if xlsxMode:
+            if not singleXlsx:
+                outXLS=outF+inFN[inFN.rfind("\\")+1:]+".xlsx"
+                workBook=openpyxl.Workbook()
+                workSheet=workBook.active
+            else:
+                sheet=inFN[inFN.rfind("\\")+1:]
+                workSheet=workBook.create_sheet(sheet)
+            workSheet.column_dimensions['A'].width=8
+            workSheet.column_dimensions['B'].width=64
+            workSheet.column_dimensions['C'].width=64
+            workSheet.append(["Index","Text","Translation"])
+        else:
+            outFN=outF+inFN[inFN.rfind("\\")+1:]+".txt"
+            output=open(outFN,'w',1,"UTF-8")
+        
         size=os.path.getsize(inFN)
         file=open(inFN,'rb')
         header=Header(file)
@@ -64,7 +93,7 @@ def main(argv):
         for n in range(0,header.count):
             offset.append(struct.unpack('I',file.read(4))[0])
             length.append(struct.unpack('I',file.read(4))[0])
-        output=open(outFN,'w',1,"UTF-8")
+        
         for x in range(0,header.count):
             if length[x]==0:
                 continue
@@ -73,12 +102,26 @@ def main(argv):
             text=Decrypt(string,length[x],x).decode("UTF-16")
             if not Check(text) and not noDump:
                 continue
-            outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
-            output.write(outLine)
+            if xlsxMode:
+                workSheet.append([x,text])
+            else:
+                outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
+                output.write(outLine)
         file.close()
-        output.close()
-        if os.path.getsize(outFN)==0:
-            os.remove(outFN)
+        if xlsxMode:
+            textLine=workSheet.max_row
+            if textLine==1 and singleXlsx:
+                workBook.remove(workSheet)
+            elif textLine>1 and not singleXlsx:
+                workBook.save(outXLS)
+        else:
+            output.close()
+            if os.path.getsize(outFN)==0:
+                os.remove(outFN)
+    if singleXlsx:
+        print("Saving xlsx file...")
+        workBook.remove(workBook['Sheet'])
+        workBook.save(outXLS)
     return True
 
 if __name__=="__main__":

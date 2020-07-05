@@ -24,7 +24,7 @@ lastDir=os.getcwd()
 typedKey=True
 hasList=False
 hasSkf=False
-singleProcess=False
+singleProcess=True
 DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
 KEY_FILE="SiglusKey.txt"
@@ -112,7 +112,6 @@ class findKey(threading.Thread):
                                stderr=subprocess.STDOUT)
         except Exception as e:
             messagebox.showerror("Error!","Can't start skf.exe!\n"+e)
-            return
         cmdText['state']='normal'
         print("Please start the game and wait for a moment...\n"+
               "Click the button again to stop.")
@@ -417,6 +416,15 @@ class setssDumper:
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
         global value1,value2,value3,valueB,valueC
+        global valueB1,valueB2
+        
+        def checkEnable():
+            if valueB1.get():
+                buttonB2['state']='normal'
+            else:
+                valueB2.set(False)
+                buttonB2['state']='disabled'
+                
         clear()
         name1=Label(inputFrame,text="Ss folder:")
         name2=Label(inputFrame,text="Output folder:")
@@ -433,12 +441,24 @@ class setssDumper:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Export all data",variable=valueB)
-        buttonB.grid(row=8,padx=2,pady=4,sticky='e')
+        valueB1.set(False)
+        valueB2.set(False)
+        buttonB=Frame(inputFrame)
+        buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='w')
+        buttonB3=Checkbutton(buttonB,text="Export all data",variable=valueB)
+        buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
+        buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',variable=valueB2)
+        buttonB3.grid(row=0,column=0,sticky='w')
+        buttonB1.grid(row=0,column=1,sticky='e')
+        buttonB2.grid(row=0,column=2,sticky='e')
     def run(self):
         cmd=["ssDumper",value1.get(),value2.get()]
         if valueB.get():
             cmd.append("-a")
+        if valueB1.get():
+            cmd.append("-x")
+            if valueB2.get():
+                cmd.append("-s")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
@@ -449,6 +469,7 @@ class setssPacker:
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
         global value1,value2,value3,valueB,valueC
+        global valueB1,valueB2
         clear()
         name1=Label(inputFrame,text="Ss folder:")
         name2=Label(inputFrame,text="Text folder:")
@@ -703,6 +724,8 @@ value1=StringVar()
 value2=StringVar()
 value3=StringVar()
 valueB=BooleanVar()
+valueB1=BooleanVar()
+valueB2=BooleanVar()
 valueC=StringVar()
 keyVar=StringVar()
 tempKey=loadKey()
