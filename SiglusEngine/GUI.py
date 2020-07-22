@@ -492,8 +492,13 @@ class setssPacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
+        valueB.set(True)
+        buttonB=Checkbutton(inputFrame,text="Have Excel text file",variable=valueB)
+        buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
         cmd=["ssPacker",value1.get(),value2.get(),value3.get()]
+        if valueB.get():
+            cmd.append("-x")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
