@@ -60,7 +60,7 @@ def main(argv):
             workBook=openpyxl.load_workbook(txtFN)
             for sheet in workBook:
                 if len(sheet.title)>=31:
-                    name=sheet['A4']
+                    name=sheet['D1'].value
                 else:
                     name=sheet.title
                 print(name)
