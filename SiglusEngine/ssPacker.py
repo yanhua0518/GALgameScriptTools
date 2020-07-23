@@ -54,14 +54,60 @@ def main(argv):
     if not os.path.exists(outF):
         os.makedirs(outF)
 
+    for txtFN in glob.glob(txtF+"*.txt"):
+        print(txtFN)
+        inFN=inF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
+        outFN=outF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
+        size=os.path.getsize(inFN)
+        file=open(inFN,'rb')
+        header=Header(file)
+        file.seek(header.index)
+        offset=[]
+        length=[]
+        for n in range(0,header.count):
+            offset.append(struct.unpack('I',file.read(4))[0])
+            length.append(struct.unpack('I',file.read(4))[0])
+        string=[]
+        for x in range(0,header.count):
+            if length[x]==0:
+                string.append(b'')
+                continue
+            file.seek(header.offset+offset[x]*2,0)
+            string.append(file.read(length[x]*2))
+        file.seek(header.offset)
+        ssData=file.read()
+        file.close()
+        txt=open(txtFN,'r',1,"UTF-8")
+        for line in txt.readlines():
+            if not line[0]==u"●":
+                continue
+            index=int(line[1:line.find("●",1)])
+            text=line[line.find("●",1)+1:].replace("\n","")
+            length[index]=len(text)
+            string[index]=Decrypt(text.encode("UTF-16")[2:],length[index],index)
+        txt.close()
+        output=open(outFN,'wb')
+        output.write(struct.pack("I",header.length))
+        output.write(header.headerData[:16])
+        output.write(struct.pack("I",size))
+        output.write(header.headerData[20:])
+        newOffset=0
+        for n in range(0,header.count):
+            output.write(struct.pack("I",newOffset))
+            output.write(struct.pack("I",length[n]))
+            newOffset+=length[n]
+        output.write(ssData)
+        for x in range(0,header.count):
+            output.write(string[x])
+        output.close()
+
     if xlsxMode:
         for txtFN in glob.glob(txtF+"*.xlsx"):
             print(txtFN)
             workBook=openpyxl.load_workbook(txtFN)
             for sheet in workBook:
-                if len(sheet.title)>=31:
-                    name=sheet['D1'].value
-                else:
+                name=sheet['D1'].value
+                if name==None or len(sheet.title)<31:
                     name=sheet.title
                 print(name)
                 inFN=inF+name
@@ -109,53 +155,7 @@ def main(argv):
                 for x in range(0,header.count):
                     output.write(string[x])
                 output.close()
-
-    for txtFN in glob.glob(txtF+"*.txt"):
-        print(txtFN)
-        inFN=inF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
-        outFN=outF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
-        size=os.path.getsize(inFN)
-        file=open(inFN,'rb')
-        header=Header(file)
-        file.seek(header.index)
-        offset=[]
-        length=[]
-        for n in range(0,header.count):
-            offset.append(struct.unpack('I',file.read(4))[0])
-            length.append(struct.unpack('I',file.read(4))[0])
-        string=[]
-        for x in range(0,header.count):
-            if length[x]==0:
-                string.append(b'')
-                continue
-            file.seek(header.offset+offset[x]*2,0)
-            string.append(file.read(length[x]*2))
-        file.seek(header.offset)
-        ssData=file.read()
-        file.close()
-        txt=open(txtFN,'r',1,"UTF-8")
-        for line in txt.readlines():
-            if not line[0]==u"●":
-                continue
-            index=int(line[1:line.find("●",1)])
-            text=line[line.find("●",1)+1:].replace("\n","")
-            length[index]=len(text)
-            string[index]=Decrypt(text.encode("UTF-16")[2:],length[index],index)
-        txt.close()
-        output=open(outFN,'wb')
-        output.write(struct.pack("I",header.length))
-        output.write(header.headerData[:16])
-        output.write(struct.pack("I",size))
-        output.write(header.headerData[20:])
-        newOffset=0
-        for n in range(0,header.count):
-            output.write(struct.pack("I",newOffset))
-            output.write(struct.pack("I",length[n]))
-            newOffset+=length[n]
-        output.write(ssData)
-        for x in range(0,header.count):
-            output.write(string[x])
-        output.close()
+                
     return True
 
 if __name__=="__main__":
