@@ -6,7 +6,6 @@ import os
 import glob
 import struct
 import unicodedata
-import openpyxl
 from Decryption import Decrypt
 
 class Header:
@@ -36,6 +35,7 @@ def Check(scr):
 def main(argv):
     if argv.count('-x')>0:
         xlsxMode=True
+        import openpyxl
         argv.remove('-x')
     else:
         xlsxMode=False
