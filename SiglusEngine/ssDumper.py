@@ -69,7 +69,7 @@ def main(argv):
         os.makedirs(outF)
     if xlsxMode and singleXlsx:
         workBook=openpyxl.Workbook()
-        outXLS=outF[:outF.rfind("\\")]+".xlsx"
+        outXLS=outF[:outF.rfind("\\")].replace(".xlsx","")+".xlsx"
     
     for inFN in glob.glob(inF+"*.ss"):
         print(inFN)

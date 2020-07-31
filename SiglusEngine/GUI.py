@@ -105,7 +105,7 @@ class findKey(threading.Thread):
         self.signal.clear()
     def run(self):
         try:
-            f=subprocess.Popen(os.getcwd()+"\\skf.exe",
+            f=subprocess.Popen(os.getcwd()+"/skf.exe",
                                creationflags=subprocess.CREATE_NO_WINDOW,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
@@ -170,28 +170,10 @@ def select(event):
     title.pack()
 
 def clear():
-    try:
-        name1.grid_forget()
-        entry1.grid_forget()
-        button1.grid_forget()
-    except:pass
-    try:
-        name2.grid_forget()
-        entry2.grid_forget()
-        button2.grid_forget()
-    except:pass
-    try:
-        name3.grid_forget()
-        entry3.grid_forget()
-        button3.grid_forget()
-    except:pass
-    try:
-        buttonB.grid_forget()
-    except:pass
-    try:
-        nameC.grid_forget()
-        entryC.grid_forget()
-    except:pass
+    global inputFrame
+    inputFrame.pack_forget()
+    inputFrame=Frame(rightFrame)
+    inputFrame.pack(side='top')
 
 def selectFile(v):
     global lastDir
@@ -238,7 +220,7 @@ def runningExe(cmd):
         startButton['state']='disabled'
     print('Running "'+cmd[0:cmd.find('.exe')+4]+'"...')
     try:
-        exe=subprocess.Popen(os.getcwd()+"\\"+cmd,bufsize=1,
+        exe=subprocess.Popen(os.getcwd()+"/"+cmd,bufsize=1,
                              creationflags=subprocess.CREATE_NO_WINDOW,
                              stdin=subprocess.PIPE,stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,universal_newlines=True)
@@ -259,9 +241,6 @@ def runningExe(cmd):
 
 class setSceneUnpacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Scene file:")
         name2=Label(inputFrame,text="Output folder:")
@@ -286,9 +265,6 @@ class setSceneUnpacker:
 
 class setScenePacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Scene file:")
         name2=Label(inputFrame,text="Scene folder:")
@@ -337,9 +313,6 @@ class setScenePacker:
         
 class setGameexeUnpacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Gameexe:")
         name2=Label(inputFrame,text="Output file:")
@@ -364,9 +337,6 @@ class setGameexeUnpacker:
 
 class setGameexePacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Gameexe:")
         name2=Label(inputFrame,text="Output file:")
@@ -413,17 +383,24 @@ class setGameexePacker:
 
 class setssDumper:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
-        global valueB1,valueB2,valueB3
         
         def checkEnable():
             if valueB1.get():
                 buttonB2['state']='normal'
             else:
                 valueB2.set(False)
+                checkName()
                 buttonB2['state']='disabled'
+        def checkName():
+            if valueB2.get():
+                name2['text']='Output file:'
+            else:
+                name2['text']="Output folder:"
+        def outSelect():
+            if valueB2.get():
+                setFile(value2)
+            else:
+                selectFolder(value2)
                 
         clear()
         name1=Label(inputFrame,text="Ss folder:")
@@ -437,7 +414,7 @@ class setssDumper:
         entry1.grid(row=1,column=0,padx=2)
         entry2.grid(row=3,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value1))
-        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
+        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=outSelect)
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         valueB.set(False)
@@ -449,7 +426,7 @@ class setssDumper:
         buttonB3=Checkbutton(buttonB,text="Copy text",variable=valueB3)
         buttonB0=Checkbutton(buttonB,text="Export all data",variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
-        buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',variable=valueB2)
+        buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',command=checkName,variable=valueB2)
         buttonB3.grid(row=0,column=0,sticky='w')
         buttonB0.grid(row=0,column=1,sticky='w')
         buttonB1.grid(row=0,column=2,sticky='e')
@@ -471,10 +448,6 @@ class setssDumper:
 
 class setssPacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
-        global valueB1,valueB2
         clear()
         name1=Label(inputFrame,text="Ss folder:")
         name2=Label(inputFrame,text="Text folder:")
@@ -511,9 +484,6 @@ class setssPacker:
 
 class setdbsDecrypt:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Dbs file:")
         name1.grid(row=0,padx=2,sticky='w')
@@ -536,9 +506,6 @@ class setdbsDecrypt:
 
 class setdbsEncrypt:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Dbs.out file:")
         name2=Label(inputFrame,text="Dbs.txt file:")
@@ -580,9 +547,6 @@ class setdbsEncrypt:
 
 class setpckUnpacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Pck file:")
         name2=Label(inputFrame,text="Output folder:")
@@ -607,9 +571,6 @@ class setpckUnpacker:
         
 class setpckPacker:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="Folder to pack:")
         name2=Label(inputFrame,text="Output file:")
@@ -634,9 +595,6 @@ class setpckPacker:
 
 class setomvCuter:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="OMV file:")
         name1.grid(row=0,padx=2,sticky='w')
@@ -654,9 +612,6 @@ class setomvCuter:
 
 class setsiglusOmv:
     def __init__(self):
-        global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
-        global buttonB,nameC,entryC
-        global value1,value2,value3,valueB,valueC
         clear()
         name1=Label(inputFrame,text="ogv file(Must be YUV444p):")
         name2=Label(inputFrame,text="OMV file:")
@@ -699,7 +654,7 @@ root.geometry("640x480")
 lastSelect=0
 
 try:
-    f=subprocess.Popen(os.getcwd()+"\\siglusomv.exe")
+    f=subprocess.Popen(os.getcwd()+"/siglusomv.exe")
     f.kill()
 except:pass
 else:
@@ -738,6 +693,7 @@ valueB1=BooleanVar()
 valueB2=BooleanVar()
 valueB3=BooleanVar()
 valueC=StringVar()
+
 keyVar=StringVar()
 tempKey=loadKey()
 
@@ -754,7 +710,7 @@ keyEntry.bind("<Control-Key-v>",unlock)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
 
 try:
-    f=subprocess.Popen(os.getcwd()+"\\skf.exe")
+    f=subprocess.Popen(os.getcwd()+"/skf.exe")
     f.kill()
 except:
     hasSkf=False

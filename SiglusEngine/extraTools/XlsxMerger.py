@@ -9,11 +9,11 @@ import openpyxl
 def main(argv):
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Excel folder\>")
+        print ("Usage: "+argv[0][argv[0].rfind("/")+1:]+" <Excel folder\>")
         return False
 
-    inF=argv[1]+"\\"
-    outXLS=argv[0][:argv[0].rfind("\\")+1]+argv[1]+".xlsx"
+    inF=argv[1]+"/"
+    outXLS=argv[0][:argv[0].rfind("/")+1]+argv[1]+".xlsx"
     mixBook=openpyxl.Workbook()
     mixBook.remove(mixBook.active)
     for inFN in glob.glob(inF+"*.xlsx"):
