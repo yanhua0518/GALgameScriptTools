@@ -416,7 +416,7 @@ class setssDumper:
         global name1,name2,name3,entry1,entry2,entry3,button1,button2,button3
         global buttonB,nameC,entryC
         global value1,value2,value3,valueB,valueC
-        global valueB1,valueB2
+        global valueB1,valueB2,valueB3
         
         def checkEnable():
             if valueB1.get():
@@ -443,18 +443,23 @@ class setssDumper:
         valueB.set(False)
         valueB1.set(False)
         valueB2.set(False)
+        valueB3.set(True)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='w')
-        buttonB3=Checkbutton(buttonB,text="Export all data",variable=valueB)
+        buttonB3=Checkbutton(buttonB,text="Copy text",variable=valueB3)
+        buttonB0=Checkbutton(buttonB,text="Export all data",variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',variable=valueB2)
         buttonB3.grid(row=0,column=0,sticky='w')
-        buttonB1.grid(row=0,column=1,sticky='e')
-        buttonB2.grid(row=0,column=2,sticky='e')
+        buttonB0.grid(row=0,column=1,sticky='w')
+        buttonB1.grid(row=0,column=2,sticky='e')
+        buttonB2.grid(row=0,column=3,sticky='e')
     def run(self):
         cmd=["ssDumper",value1.get(),value2.get()]
         if valueB.get():
             cmd.append("-a")
+        if valueB3.get():
+            cmd.append("-d")
         if valueB1.get():
             cmd.append("-x")
             if valueB2.get():
@@ -731,6 +736,7 @@ value3=StringVar()
 valueB=BooleanVar()
 valueB1=BooleanVar()
 valueB2=BooleanVar()
+valueB3=BooleanVar()
 valueC=StringVar()
 keyVar=StringVar()
 tempKey=loadKey()

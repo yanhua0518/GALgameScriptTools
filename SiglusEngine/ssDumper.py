@@ -38,6 +38,11 @@ def main(argv):
         argv.remove('-a')
     else:
         noDump=False
+    if argv.count('-d')>0:
+        copyLine=True
+        argv.remove('-d')
+    else:
+        copyLine=False
     if argv.count('-x')>0:
         xlsxMode=True
         import openpyxl
@@ -51,7 +56,7 @@ def main(argv):
         singleXlsx=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a] [-x] [-s]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a] [-c] [-x] [-s]")
         return False
 
     inF=argv[1]+"\\"
@@ -109,9 +114,15 @@ def main(argv):
             if not Check(text) and not noDump:
                 continue
             if xlsxMode:
-                workSheet.append([x,text])
+                if copyLine:
+                    workSheet.append([x,text,text])
+                else:
+                    workSheet.append([x,text])
             else:
-                outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
+                if copyLine:
+                    outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"
+                else:
+                    outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●\n\n"
                 output.write(outLine)
         file.close()
         if xlsxMode:
