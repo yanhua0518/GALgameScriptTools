@@ -43,6 +43,7 @@ GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并
 -x命令导出xlsx，使用-s导出为单个xlsx文件。
 导入ss时加-x检测xlsx文件，先导入xlsx后导入txt，所以如果同时存在将会导入txt文件的内容。
 
+导出ss时添加-d命令，不加-d不会在译文行填入原文。
 
 ***
 ## Usage:
@@ -53,7 +54,7 @@ ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
 GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
 GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]]
 
-ssDumper.py <Scene\> [text\] [-a] [-x [-s]]
+ssDumper.py <Scene\> [text\] [-a] [-d] [-x [-s]]
 ssPacker.py <Scene\> <text\> [output\] [-x]
 
 dbsDecrypt.py <dbs file>
