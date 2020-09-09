@@ -56,9 +56,15 @@ def main(argv):
         argv.remove('-a')
     else:
         noDump=False
+    if argv.count('-x')>0:
+        xlsxMode=True
+        import openpyxl
+        argv.remove('-x')
+    else:
+        xlsxMode=False
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file> [-a]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs file> [-a/-x]")
         return False
 
     try:
@@ -127,26 +133,56 @@ def main(argv):
     file.seek(header.fileSize)
     dummy=file.read()
     file.close()
-
-    txt=open(argv[1]+'.txt','w',1,"UTF-16")
-    if isUTF:
-        txt.write('Unicode\n')
+    
+    if xlsxMode:
+        xls=argv[1]+".xlsx"
+        workBook=openpyxl.Workbook()
+        workSheet=workBook.active
+        workSheet.title="Translation"
+        tempIndex=["#DATANO"]
+        tempType=["#DATATYPE"]
+        for i,j in zip(dataIndex,dataType):
+            tempIndex.append(i)
+            if j==0x53:
+                tempType.append("S")
+            else:
+                tempType.append("V")
+        workSheet.append(tempIndex)
+        workSheet.append(tempType)
+        for l in range(0,header.lineCount):
+            tempLine=[lineIndex[l],*lineData[l]]
+            workSheet.append(tempLine)
+        sheetData=[]
+        for row in workSheet.iter_rows():
+            rowData=[]
+            for cell in row:
+                rowData.append(cell.value)
+            sheetData.append(rowData)
+        workSheetCopy=workBook.create_sheet("Text")
+        for data in sheetData:
+            workSheetCopy.append(data)
+        workBook.save(xls)
     else:
-        txt.write('ASCII\n')
-    for m in range(0,header.lineCount):
-        txt.write('[%.4d]\n'%lineIndex[m])
-        for n in range(0,header.dataCount):
-            tempIndex=dataIndex[n]
-            tempData=lineData[m][n]
-            if dataType[n]==0x53 and (tempData!='' or noDump):
-                txt.write('○%.2d○'%tempIndex+tempData+'\n●%.2d●'%tempIndex+lineData[m][n]+'\n\n')
-            
-            #int data:
-            elif dataType[n]==0x56 and noDump:
-                txt.write('{%.2d}'%tempIndex+str(tempData)+'\n<%.2d>'%tempIndex+str(tempData)+'\n\n')
-            
-        txt.write('\n')
-    txt.close()
+        txt=open(argv[1]+'.txt','w',1,"UTF-16")  
+        if isUTF:
+            txt.write('Unicode\n')
+        else:
+            txt.write('ASCII\n')
+        for m in range(0,header.lineCount):
+            txt.write('[%.4d]\n'%lineIndex[m])
+            for n in range(0,header.dataCount):
+                tempIndex=dataIndex[n]
+                tempData=lineData[m][n]
+                if dataType[n]==0x53 and (tempData!='' or noDump):
+                    txt.write('○%.2d○'%tempIndex+tempData+'\n●%.2d●'%tempIndex+lineData[m][n]+'\n\n')
+                
+                #int data:
+                elif dataType[n]==0x56 and noDump:
+                    txt.write('{%.2d}'%tempIndex+str(tempData)+'\n<%.2d>'%tempIndex+str(tempData)+'\n\n')
+                
+            txt.write('\n')
+        txt.close()
+        
     return True
         
 if __name__=="__main__":

@@ -24,7 +24,7 @@ lastDir=os.getcwd()
 typedKey=True
 hasList=False
 hasSkf=False
-singleProcess=True
+singleProcess=False
 DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
 KEY_FILE="SiglusKey.txt"
@@ -194,6 +194,10 @@ def selectFolder(v):
         v.set(temp)
         lastDir=temp
 
+def getValue(v):
+    return v.get().replace('"','').replace("'","")
+    
+
 def running(cmd,key):
     if key==None:
         code=cmd[0]+".main(cmd)"
@@ -257,7 +261,7 @@ class setSceneUnpacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
     def run(self):
-        cmd=["SceneUnpacker",value1.get(),value2.get()]
+        cmd=["SceneUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
         runPy.setDaemon(True)
         runPy.start()
@@ -293,7 +297,7 @@ class setScenePacker:
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
         entryC.grid(row=7,column=1,padx=2,pady=4)
     def run(self):
-        cmd=["ScenePacker",value1.get(),value2.get(),value3.get()]
+        cmd=["ScenePacker",getValue(value1),getValue(value2),getValue(value3)]
         try:
             comp=int(valueC.get())
         except:
@@ -329,7 +333,7 @@ class setGameexeUnpacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
     def run(self):
-        cmd=["GameexeUnpacker",value1.get(),value2.get()]
+        cmd=["GameexeUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
         runPy.setDaemon(True)
         runPy.start()
@@ -361,7 +365,7 @@ class setGameexePacker:
         buttonB=Checkbutton(inputFrame,text="Double Encryption(Useless)",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
-        cmd=["GameexePacker",value1.get(),value2.get(),value3.get()]
+        cmd=["GameexePacker",getValue(value1),getValue(value2),getValue(value3)]
         if valueB.get():
             cmd.append("-p")
         try:
@@ -432,7 +436,7 @@ class setssDumper:
         buttonB1.grid(row=0,column=2,sticky='e')
         buttonB2.grid(row=0,column=3,sticky='e')
     def run(self):
-        cmd=["ssDumper",value1.get(),value2.get()]
+        cmd=["ssDumper",getValue(value1),getValue(value2)]
         if valueB.get():
             cmd.append("-a")
         if valueB3.get():
@@ -474,7 +478,7 @@ class setssPacker:
         buttonB=Checkbutton(inputFrame,text="Have Excel text file",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
-        cmd=["ssPacker",value1.get(),value2.get(),value3.get()]
+        cmd=["ssPacker",getValue(value1),getValue(value2),getValue(value3)]
         if valueB.get():
             cmd.append("-x")
         runPy=threading.Thread(target=running,args=(cmd,None))
@@ -484,6 +488,13 @@ class setssPacker:
 
 class setdbsDecrypt:
     def __init__(self):
+        def checkEnable():
+            if valueB2.get():
+                valueB1.set(True)
+                buttonB1['state']='disabled'
+            else:
+                buttonB1['state']='normal'
+        
         clear()
         name1=Label(inputFrame,text="Dbs file:")
         name1.grid(row=0,padx=2,sticky='w')
@@ -492,12 +503,19 @@ class setdbsDecrypt:
         entry1.grid(row=1,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
-        valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Export all data",variable=valueB)
-        buttonB.grid(row=8,padx=2,pady=4,sticky='e')
+        valueB1.set(False)
+        valueB2.set(False)
+        buttonB=Frame(inputFrame)
+        buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='e')
+        buttonB1=Checkbutton(buttonB,text="Export all data",variable=valueB1)
+        buttonB2=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB2)
+        buttonB1.grid(row=0,column=0,sticky='w')
+        buttonB2.grid(row=0,column=1,sticky='e')
     def run(self):
-        cmd=["dbsDecrypt",value1.get()]
-        if valueB.get():
+        cmd=["dbsDecrypt",getValue(value1)]
+        if valueB2.get():
+            cmd.append("-x")
+        elif valueB1.get():
             cmd.append("-a")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
@@ -527,7 +545,7 @@ class setdbsEncrypt:
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
         entryC.grid(row=7,column=1,padx=2,pady=4)
     def run(self):
-        cmd=["dbsEncrypt",value1.get(),value2.get()]
+        cmd=["dbsEncrypt",getValue(value1),getValue(value2)]
         try:
             comp=int(valueC.get())
         except:
@@ -563,7 +581,7 @@ class setpckUnpacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
     def run(self):
-        cmd=["pckUnpacker",value1.get(),value2.get()]
+        cmd=["pckUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
@@ -587,7 +605,7 @@ class setpckPacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
     def run(self):
-        cmd=["pckPacker",value1.get(),value2.get()]
+        cmd=["pckPacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
@@ -604,7 +622,7 @@ class setomvCuter:
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
     def run(self):
-        cmd=["omvCuter",value1.get()]
+        cmd=["omvCuter",getValue(value1)]
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
@@ -628,11 +646,11 @@ class setsiglusOmv:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
     def run(self):
-        cmd='siglusomv.exe "'+value1.get()+'" "'
-        if not value2.get():
-            cmd+=value1.get().replace('.ogv','.omv')+'"'
+        cmd='siglusomv.exe "'+getValue(value1)+'" "'
+        if not getValue(value2):
+            cmd+=getValue(value1).replace('.ogv','.omv')+'"'
         else:
-            cmd+=value2.get()+'"'
+            cmd+=getValue(value2)+'"'
         runExe=threading.Thread(target=runningExe,args=(cmd.replace("*",""),))
         runExe.setDaemon(True)
         runExe.start()
