@@ -41,9 +41,20 @@ GUI增加已知Key选择功能，如果存在KeyList.txt会读取其中的Key并
 
 增加把ss导出为excel文件的功能。
 -x命令导出xlsx，使用-s导出为单个xlsx文件。
-导入ss时加-x检测xlsx文件，先导入xlsx后导入txt，所以如果同时存在将会导入txt文件的内容。
+导入ss时加-x检测xlsx文件，先导入txt后导入xlsx，所以如果同时存在将会导入xlsx文件的内容。
 
-导出ss时添加-d命令，不加-d不会在译文行填入原文。
+导出ss添加-d命令，不加-d不会在译文行填入原文。
+
+增加把dbs导出为excel文件的功能。
+-x命令导出xlsx。导出为excel文件不会进行文本过滤，无需和-a同时使用。
+
+导出的excel文件转换为csv后兼容官方dbs封装工具。
+
+dbsEncrypt不能xlsx格式导入dbs文件。
+需要使用dbsBuilder进行封装。
+
+dbsBuilder封装建议一定要加-u命令封装为Unicode编码。ANSI编码仅支持简体中文。
+另外，同样有-c压缩参数。
 
 ***
 ## Usage:
@@ -57,11 +68,12 @@ GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]]
 ssDumper.py <Scene\> [text\] [-a] [-d] [-x [-s]]
 ssPacker.py <Scene\> <text\> [output\] [-x]
 
-dbsDecrypt.py <dbs file>
+dbsDecrypt.py <dbs file> [-a/-x]
 dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]]
+dbsBuilder.py <xlsx folder\> [dbs folder\] [-u] [-c [2~17]]
 
 pckUnpacker.py <pck file> [output folder\]
-pckPacker.py <folder\> [output file]
+pckPacker.py <data folder\> [output file]
 
 omvCuter.py <omv file> [output file]
 
