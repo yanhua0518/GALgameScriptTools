@@ -197,7 +197,7 @@ def main(argv):
     dbs.write(struct.pack('I',dbsSize))
     dbs.seek(0,2)
     #dbs.write(dummy)
-    dbs.write(bytes(32-dbsSize%32))
+    dbs.write(bytes(64-dbsSize%64))
     dbsSize=dbs.tell()
     '''
     dbsFile=open(outFN.replace('.new','.ori'),'wb')

@@ -8,13 +8,13 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox
 import SceneUnpacker,ScenePacker,GameexeUnpacker,GameexePacker
 import ssDumper,ssPacker,dbsDecrypt,dbsEncrypt,pckUnpacker,pckPacker,omvCuter
-
+import dbsBuilder
 
 tool=["Unpack Scene","Pack Scene","Decrypt Gameexe","Encrypt Gameexe",
-      "Dump ss","Pack ss","Dump dbs","Pack dbs","Unpack pck","Pack pck",
-      "Cut OMV header"]
+      "Dump ss","Pack ss","Dump dbs","Pack dbs","Create dbs",
+      "Unpack pck","Pack pck","Cut OMV header"]
 command=["SceneUnpacker","ScenePacker","GameexeUnpacker","GameexePacker",
-         "ssDumper","ssPacker","dbsDecrypt","dbsEncrypt",
+         "ssDumper","ssPacker","dbsDecrypt","dbsEncrypt","dbsBuilder",
          "pckUnpacker","pckPacker","omvCuter"]
 
 ENTRY_WIDTH=58
@@ -546,6 +546,56 @@ class setdbsEncrypt:
         entryC.grid(row=7,column=1,padx=2,pady=4)
     def run(self):
         cmd=["dbsEncrypt",getValue(value1),getValue(value2)]
+        try:
+            comp=int(valueC.get())
+        except:
+            comp=0
+        else:
+            if comp<2:
+                comp=0
+            elif comp>17:
+                comp=17
+        if comp!=0:
+            cmd.append("-c")
+            cmd.append(str(comp))
+        runPy=threading.Thread(target=running,args=(cmd,None))
+        runPy.setDaemon(True)
+        runPy.start()
+        return 
+
+class setdbsBuilder:
+    def __init__(self):
+        clear()
+        name1=Label(inputFrame,text="Xlsx folder:")
+        name2=Label(inputFrame,text="Dbs folder:")
+        name1.grid(row=0,padx=2,sticky='w')
+        name2.grid(row=2,padx=2,sticky='w')
+        value1.set("dbsData")
+        value2.set("")
+        entry1=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value1)
+        entry2=Entry(inputFrame,width=ENTRY_WIDTH,textvariable=value2)
+        entry1.grid(row=1,column=0,padx=2)
+        entry2.grid(row=3,column=0,padx=2)
+        button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value1))
+        button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
+        button1.grid(row=1,column=1,padx=2)
+        button2.grid(row=3,column=1,padx=2)
+        valueB.set(True)
+        buttonB=Frame(inputFrame)
+        buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='e')
+        buttonB1=Radiobutton(buttonB,text="ANSI(GBK)",variable=valueB,value=False)
+        buttonB2=Radiobutton(buttonB,text="Unicode",variable=valueB,value=True)
+        buttonB1.grid(row=8,column=1,sticky='w')
+        buttonB2.grid(row=8,column=2,sticky='w')
+        valueC.set('17')
+        nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
+        nameC.grid(row=7,padx=2,pady=4,sticky='e')
+        entryC=Entry(inputFrame,width=4,textvariable=valueC)
+        entryC.grid(row=7,column=1,padx=2,pady=4)
+    def run(self):
+        cmd=["dbsBuilder",getValue(value1),getValue(value2)]
+        if valueB.get():
+            cmd.append("-u")
         try:
             comp=int(valueC.get())
         except:

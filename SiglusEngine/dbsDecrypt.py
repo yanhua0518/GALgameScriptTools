@@ -4,6 +4,7 @@
 import sys
 import os
 import struct
+from io import BytesIO
 from Decryption import Decrypt5,Decrypt3,Decompress
 
 '''
@@ -92,11 +93,14 @@ def main(argv):
     dataB=Decompress(dataA[8:],decompSize)
     dataC=Decrypt3(dataB)
     
-    output=open(argv[1]+'.out','wb')
-    output.write(dataC)
-    output.close()
-    
-    file=open(argv[1]+'.out','rb')
+    if xlsxMode:
+        file=BytesIO(dataC)
+    else:
+        output=open(argv[1]+'.out','wb')
+        output.write(dataC)
+        output.close()
+        file=open(argv[1]+'.out','rb')
+
     header=Header(file)
     file.seek(header.lineIndexOffset)
     lineIndex=struct.unpack('%di'%header.lineCount,file.read(header.lineCount*4))
@@ -139,6 +143,7 @@ def main(argv):
         workBook=openpyxl.Workbook()
         workSheet=workBook.active
         workSheet.title="Translation"
+        workSheet.column_dimensions['A'].width=10
         tempIndex=["#DATANO"]
         tempType=["#DATATYPE"]
         for i,j in zip(dataIndex,dataType):
@@ -152,15 +157,8 @@ def main(argv):
         for l in range(0,header.lineCount):
             tempLine=[lineIndex[l],*lineData[l]]
             workSheet.append(tempLine)
-        sheetData=[]
-        for row in workSheet.iter_rows():
-            rowData=[]
-            for cell in row:
-                rowData.append(cell.value)
-            sheetData.append(rowData)
-        workSheetCopy=workBook.create_sheet("Text")
-        for data in sheetData:
-            workSheetCopy.append(data)
+        workSheetCopy=workBook.copy_worksheet(workSheet)
+        workSheetCopy.title="Text"
         workBook.save(xls)
     else:
         txt=open(argv[1]+'.txt','w',1,"UTF-16")  
