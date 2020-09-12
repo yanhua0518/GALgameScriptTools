@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # For Windows OS Only....
 
-import sys,os,time,struct,threading,subprocess,signal
+import sys,os,time,struct,threading,subprocess,signal,windnd
 from tkinter import *
 from tkinter.filedialog import *
 from tkinter import messagebox
@@ -193,6 +193,13 @@ def selectFolder(v):
     if temp:
         v.set(temp)
         lastDir=temp
+        
+def dropValue1(f):
+    value1.set(f[0].decode("GBK"))
+def dropValue2(f):
+    value2.set(f[0].decode("GBK"))
+def dropValue3(f):
+    value3.set(f[0].decode("GBK"))
 
 def getValue(v):
     return v.get().replace('"','').replace("'","")
@@ -260,6 +267,8 @@ class setSceneUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["SceneUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
@@ -291,6 +300,9 @@ class setScenePacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
+        windnd.hook_dropfiles(entry3,dropValue3)
         valueC.set('17')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
@@ -332,6 +344,8 @@ class setGameexeUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["GameexeUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
@@ -356,6 +370,8 @@ class setGameexePacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
         valueC.set('0')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
@@ -421,6 +437,8 @@ class setssDumper:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=outSelect)
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
         valueB.set(False)
         valueB1.set(False)
         valueB2.set(False)
@@ -474,6 +492,9 @@ class setssPacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
+        windnd.hook_dropfiles(entry3,dropValue3)
         valueB.set(True)
         buttonB=Checkbutton(inputFrame,text="Have Excel text file",variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
@@ -503,6 +524,7 @@ class setdbsDecrypt:
         entry1.grid(row=1,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
         valueB1.set(False)
         valueB2.set(False)
         buttonB=Frame(inputFrame)
@@ -539,6 +561,8 @@ class setdbsEncrypt:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
         valueC.set('17')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
@@ -580,6 +604,8 @@ class setdbsBuilder:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
         valueB.set(True)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='e')
@@ -630,6 +656,8 @@ class setpckUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["pckUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
@@ -654,6 +682,8 @@ class setpckPacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["pckPacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
@@ -671,6 +701,7 @@ class setomvCuter:
         entry1.grid(row=1,column=0,padx=2)
         button1=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value1))
         button1.grid(row=1,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
     def run(self):
         cmd=["omvCuter",getValue(value1)]
         runPy=threading.Thread(target=running,args=(cmd,None))
@@ -695,6 +726,8 @@ class setsiglusOmv:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd='siglusomv.exe "'+getValue(value1)+'" "'
         if not getValue(value2):
