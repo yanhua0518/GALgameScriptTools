@@ -56,6 +56,7 @@ dbsEncrypt不能xlsx格式导入dbs文件。
 dbsBuilder封装建议一定要加-u命令封装为Unicode编码。ANSI编码仅支持简体中文。
 另外，同样有-c压缩参数。
 
+现在支持拖拽文件了！
 ***
 ## Usage:
 ```
