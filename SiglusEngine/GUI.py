@@ -251,6 +251,11 @@ def runningExe(cmd):
     startButton['state']='normal'
 
 class setSceneUnpacker:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value2.get()=="Scene" or value2.get()=="") and file.find(".pck")>0:
+            value2.set(file.replace('.pck',''))
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="Scene file:")
@@ -267,7 +272,7 @@ class setSceneUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["SceneUnpacker",getValue(value1),getValue(value2)]
@@ -277,6 +282,11 @@ class setSceneUnpacker:
         return 
 
 class setScenePacker:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value3.get()=="Scene.pck2" or value3.get()=="") and file.find(".pck")>0:
+            value3.set(file+"2")
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="Scene file:")
@@ -300,7 +310,7 @@ class setScenePacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
         windnd.hook_dropfiles(entry3,dropValue3)
         valueC.set('17')
@@ -328,6 +338,11 @@ class setScenePacker:
         return 
         
 class setGameexeUnpacker:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value2.get()=="Gameexe.ini" or value2.get()=="") and file.lower().find("gameexe.dat")>0:
+            value2.set(file.lower().replace("gameexe.dat","Gameexe.ini"))
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="Gameexe:")
@@ -344,7 +359,7 @@ class setGameexeUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["GameexeUnpacker",getValue(value1),getValue(value2)]
@@ -354,6 +369,11 @@ class setGameexeUnpacker:
         return 
 
 class setGameexePacker:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value2.get()=="Gameexe.dat2" or value2.get()=="") and (file.lower().find("gameexe.ini")>0 or file.lower().find("gameexe.txt")>0):
+            value2.set(file.lower().replace("gameexe.ini","Gameexe.dat2").replace("gameexe.txt","Gameexe.dat2"))
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="Gameexe:")
@@ -370,7 +390,7 @@ class setGameexePacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:setFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
         valueC.set('0')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
@@ -402,6 +422,14 @@ class setGameexePacker:
         return 
 
 class setssDumper:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value2.get()=="Text" or value2.get()=="") and file[file.rfind("\\"):].find(".")<0:
+            if valueB2.get():
+                value2.set(file+".xlsx")
+            else:
+                value2.set(file+"_text")
     def __init__(self):
         
         def checkEnable():
@@ -437,7 +465,7 @@ class setssDumper:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=outSelect)
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
         valueB.set(False)
         valueB1.set(False)
@@ -469,6 +497,11 @@ class setssDumper:
         return 
 
 class setssPacker:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if (value3.get()=="Output" or value3.get()=="") and file[file.rfind("\\"):].find(".")<0:
+            value3.set(file+"_packed")
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="Ss folder:")
@@ -492,7 +525,7 @@ class setssPacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         button3.grid(row=5,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
         windnd.hook_dropfiles(entry3,dropValue3)
         valueB.set(True)

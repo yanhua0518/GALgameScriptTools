@@ -8,7 +8,7 @@ import struct
 import openpyxl
 from io import BytesIO
 from Decryption import Decrypt5,Decrypt3,FakeCompress,Compress
-
+'''
 class Header:
     fileSize=0
     headerData=b''
@@ -30,7 +30,7 @@ class Header:
         H.dataFormatOffset=H.headerList[3]
         H.lineDataIndexOffset=H.headerList[4]
         H.textOffset=H.headerList[5]
-
+'''
 def Transcode(uni):
     tran=''
     for ch in uni:
@@ -157,7 +157,6 @@ def main(argv):
         dbs.write(struct.pack('2I',lineCount,dataCount))
         dbs.write(struct.pack('2I',lineIndexOffset,dataFormatOffset))
         dbs.write(struct.pack('2I',lineDataIndexOffset,textOffset))
-        
         dbs.write(struct.pack('%di'%lineCount,*lineIndex))
         for n in range(0,dataCount):
             dbs.write(struct.pack('2I',dataIndex[n],dataType[n]))
@@ -175,13 +174,6 @@ def main(argv):
                     textOffset+=len(tempString)
                 else:
                     dbs.write(struct.pack('I',lineData[m][n]))
-        '''
-        if dbs.tell()!=header.textOffset:
-            tempOffset=dbs.tell()
-            dbs.seek(24)
-            dbs.write(struct.pack('I',tempOffset))
-            dbs.seek(0,2)
-        '''
         dbs.write(textData)
         dbsSize=dbs.tell()
         dbs.seek(0)
