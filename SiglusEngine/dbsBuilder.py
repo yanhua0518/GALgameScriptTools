@@ -71,16 +71,15 @@ def main(argv):
 
     inF=argv[1]+'\\'
     if len(argv)<3 or argv[2]=='':
-        outF=argv[0][:argv[0].rfind("\\")+1]+argv[1][argv[1].rfind("\\")+1:]+"_dbs\\"
+        outF=argv[1]+"_dbs\\"
     else:
-        outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
+        outF=argv[2]+"\\"
     if not os.path.exists(outF):
         os.makedirs(outF)
     
     for inFN in glob.glob(inF+"*.xlsx"):
         print(inFN)
         outFN=outF+inFN[inFN.rfind("\\")+1:].replace('.xlsx','.dbs').replace('.dbs.dbs','.dbs')
-
         workBook=openpyxl.load_workbook(inFN)
         workSheet=workBook.active
         for cell in workSheet['A']:
