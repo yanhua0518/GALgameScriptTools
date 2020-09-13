@@ -743,6 +743,11 @@ class setomvCuter:
         return 
 
 class setsiglusOmv:
+    def dropValue1(self,f):
+        file=f[0].decode("GBK")
+        value1.set(file)
+        if file.lower()[file.rfind("\\"):].find(".ogv")>0:
+            value2.set(file.lower().replace('.ogv','.omv'))
     def __init__(self):
         clear()
         name1=Label(inputFrame,text="ogv file(Must be YUV444p):")
@@ -759,7 +764,7 @@ class setsiglusOmv:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFile(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
-        windnd.hook_dropfiles(entry1,dropValue1)
+        windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd='siglusomv.exe "'+getValue(value1)+'" "'
