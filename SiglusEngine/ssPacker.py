@@ -100,7 +100,7 @@ def main(argv):
             index=int(line[1:line.find("●",1)])
             text=line[line.find("●",1)+1:].replace("\n","").replace("~","～").replace("―","—").replace("－","—")
             SS.length[index]=len(text)
-            SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
+            SS.string[index]=Decrypt(text.encode("UTF-16").replace(b'\xff\xfe',b''),SS.length[index],index)
         txt.close()
         SS.write(outFN)
 
@@ -127,7 +127,7 @@ def main(argv):
                     else:
                         text=text.replace("~","～").replace("―","—").replace("－","—")
                     SS.length[index]=len(text)
-                    SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
+                    SS.string[index]=Decrypt(text.encode("UTF-16").replace(b'\xff\xfe',b''),SS.length[index],index)
                 SS.write(outFN)
                 
     return True
