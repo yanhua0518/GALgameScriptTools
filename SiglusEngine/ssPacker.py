@@ -6,7 +6,6 @@ import os
 import glob
 import struct
 import unicodedata
-import openpyxl
 from Decryption import Decrypt
 
 class ss:
@@ -70,6 +69,7 @@ def Check(scr):
 def main(argv):
     if argv.count('-x')>0:
         xlsxMode=True
+        import openpyxl
         argv.remove('-x')
     else:
         xlsxMode=False
@@ -98,9 +98,9 @@ def main(argv):
             if not line[0]==u"●":
                 continue
             index=int(line[1:line.find("●",1)])
-            text=line[line.find("●",1)+1:].replace("\n","").replace("~","～").replace("―","—").replace("－","—")
+            text=line[line.find("●",1)+1:].replace("\n","")
             SS.length[index]=len(text)
-            SS.string[index]=Decrypt(text.encode("UTF-16").replace(b'\xff\xfe',b''),SS.length[index],index)
+            SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
         txt.close()
         SS.write(outFN)
 
@@ -124,10 +124,8 @@ def main(argv):
                     text=c.value
                     if text==None:
                         text=""
-                    else:
-                        text=text.replace("~","～").replace("―","—").replace("－","—")
                     SS.length[index]=len(text)
-                    SS.string[index]=Decrypt(text.encode("UTF-16").replace(b'\xff\xfe',b''),SS.length[index],index)
+                    SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
                 SS.write(outFN)
                 
     return True
