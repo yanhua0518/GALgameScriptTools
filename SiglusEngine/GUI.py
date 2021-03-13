@@ -107,11 +107,11 @@ class findKey(threading.Thread):
         try:
             f=subprocess.Popen(os.getcwd()+"/skf.exe",
                                creationflags=subprocess.CREATE_NO_WINDOW,
-                               stdin=subprocess.PIPE,
+                               stdin=subprocess.DEVNULL,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT)
+                               stderr=subprocess.DEVNULL)
         except Exception as e:
-            messagebox.showerror("Error!","Can't start skf.exe!\n"+e)
+            messagebox.showerror("Error!","Can't start skf.exe!\n"+str(e))
         cmdText['state']='normal'
         print("Please start the game and wait for a moment...\n"+
               "Click the button again to stop.")
@@ -127,9 +127,7 @@ class findKey(threading.Thread):
                 return
         try:
             output=f.stdout.readlines()
-            #print(output)
-            keyIndex=output.index(b'Keys found:\n')+1
-            keyStr=output[keyIndex].decode()
+            keyStr=output[0].decode()
             newKey=setKey(keyStr)
         except:
             if output[0][:6]==b'Please':
@@ -238,7 +236,7 @@ def runningExe(cmd):
         for line in iter(exe.stdout.readline,''):
             print(line.replace('\n',''))
     except Exception as e:
-        messagebox.showerror("Error!","Can't create process!\n"+e)
+        messagebox.showerror("Error!","Can't create process!\n"+str(e))
     else:
         if exe.stderr.readlines() or line==[]:
             messagebox.showerror("Error!","Failed!")
