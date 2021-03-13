@@ -86,6 +86,8 @@ def main(argv):
             workSheet.column_dimensions['A'].width=8
             workSheet.column_dimensions['B'].width=64
             workSheet.column_dimensions['C'].width=64
+            fillColor=openpyxl.styles.PatternFill(fill_type="solid", fgColor="F2F2F2")
+            border=openpyxl.styles.Border(top=openpyxl.styles.Side(style='thin',color='D0D7E5'),left=openpyxl.styles.Side(style='thin',color='D0D7E5'),right=openpyxl.styles.Side(style='thin',color='D0D7E5'))
             if name!=sheet:
                 tempName=name
             else:
@@ -118,6 +120,8 @@ def main(argv):
                     workSheet.append([x,text,text])
                 else:
                     workSheet.append([x,text])
+                workSheet.cell(workSheet.max_row,3).fill=fillColor
+                workSheet.cell(workSheet.max_row,3).border=border
             else:
                 if copyLine:
                     outLine="○"+'%.6d'%x+"○"+text+"\n●"+'%.6d'%x+"●"+text+"\n\n"

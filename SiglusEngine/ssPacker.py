@@ -21,7 +21,7 @@ class ss:
         H.index=H.headerList[2]
         H.count=H.headerList[3]
         H.dataOffset=H.headerList[4]
-        H.datacount=H.headerList[5]
+        H.dataCount=H.headerList[5]
         f.seek(H.index)
         H.offset=[]
         H.length=[]
