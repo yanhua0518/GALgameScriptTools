@@ -24,7 +24,7 @@ def main(argv):
             for i,row in enumerate(sheet.iter_rows()):
                 for j,cell in enumerate(row):
                     workSheet.cell(row=i+1,column=j+1,value=cell.value)
-    moxBook.save(outXLS)
+    mixBook.save(outXLS)
     return True
 
 if __name__=="__main__":
