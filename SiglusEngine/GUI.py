@@ -130,7 +130,7 @@ class findKey(threading.Thread):
             keyStr=output[0].decode()
             newKey=setKey(keyStr)
         except:
-            if output[0][:6]==b'Please':
+            if output[0]:
                 messagebox.showwarning("Warning",
                                    "Can't find key!\nPlease try again.")
             else:
