@@ -390,7 +390,7 @@ class setGameexePacker:
         button2.grid(row=3,column=1,padx=2)
         windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
-        valueC.set('0')
+        valueC.set('17')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
