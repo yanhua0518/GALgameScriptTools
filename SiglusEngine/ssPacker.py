@@ -60,13 +60,27 @@ class ss:
         f.write(struct.pack("32I",*H.headerList))
         f.close()
 
-def Check(scr):
-    for char in scr:
-        if unicodedata.east_asian_width(char)!='Na':
-            return True
-    return False
+def change(text):
+    if len(text)<1:
+        return text
+    temp=text.replace('「','“').replace('」','”').replace("『","‘").replace("』","’")[::-1]
+    if len(text)<2:
+        return temp[::-1]
+    if (temp[0]=="”" or temp[0]=="’" or temp[0]=="）") and temp[1]!="，" and temp[1]!="。" and temp[1]!="？" and temp[1]!="！" and temp[1]!="～" and temp[1]!="—" and temp[1]!="…" and temp[1]!=" ":
+        temp=temp[0].replace("”","”。").replace("’","’。").replace("）","）。")+temp[1:]
+    return temp[::-1]
 
 def main(argv):
+    if argv.count('-db')>0:
+        dbLine=True
+        argv.remove('-db')
+    else:
+        dbLine=False
+    if argv.count('-q')>0:
+        quotChange=True
+        argv.remove('-q')
+    else:
+        quotChange=False
     if argv.count('-x')>0:
         xlsxMode=True
         import openpyxl
@@ -75,7 +89,7 @@ def main(argv):
         xlsxMode=False
         
     if len(argv)<3 or argv[1]=='' or argv[2]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\] [-x]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\] [-x [-db]] [-q]")
         return False
 
     inF=argv[1]+"\\"
@@ -99,6 +113,8 @@ def main(argv):
                 continue
             index=int(line[1:line.find("●",1)])
             text=line[line.find("●",1)+1:].replace("\n","")
+            if quotChange:
+                text=change(text)
             SS.length[index]=len(text)
             SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
         txt.close()
@@ -116,14 +132,23 @@ def main(argv):
                 inFN=inF+name
                 outFN=outF+name
                 SS=ss(inFN)
-                for a,c in zip(sheet['A'],sheet['C']):
+                for a,b,c in zip(sheet['A'],sheet['B'],sheet['C']):
                     try:
                         index=int(a.value)
                     except:
                         continue
                     text=c.value
+                    jp=b.value
                     if text==None:
                         text=""
+                    elif jp!=text and (len(text)>2 or len(jp)>2) and dbLine:
+                        if quotChange:
+                            text=change(text)+'#NEWLINE'+jp
+                        else:
+                            text=text+'#NEWLINE'+jp
+                    elif quotChange:
+                        text=change(text)
+                        
                     SS.length[index]=len(text)
                     SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
                 SS.write(outFN)

@@ -465,24 +465,32 @@ class setssDumper:
         button2.grid(row=3,column=1,padx=2)
         windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
-        valueB.set(False)
         valueB1.set(False)
         valueB2.set(False)
         valueB3.set(True)
+        valueI.set(1)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='w')
+        #buttonR=Frame(inputFrame)
+        #buttonR.grid(row=7,column=0,padx=2,pady=4,sticky='w')
         buttonB3=Checkbutton(buttonB,text="Copy text",variable=valueB3)
-        buttonB0=Checkbutton(buttonB,text="Export all data",variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',command=checkName,variable=valueB2)
+        buttonR1=Radiobutton(buttonB,text="No dump",variable=valueI,value=0)
+        buttonR2=Radiobutton(buttonB,text="Smart dump",variable=valueI,value=1)
+        buttonR3=Radiobutton(buttonB,text="Full dump",variable=valueI,value=2)
         buttonB3.grid(row=0,column=0,sticky='w')
-        buttonB0.grid(row=0,column=1,sticky='w')
-        buttonB1.grid(row=0,column=2,sticky='e')
-        buttonB2.grid(row=0,column=3,sticky='e')
+        buttonB1.grid(row=0,column=1,sticky='w')
+        buttonB2.grid(row=0,column=2,sticky='w')
+        buttonR1.grid(row=1,column=0,sticky='w')
+        buttonR2.grid(row=1,column=1,sticky='w')
+        buttonR3.grid(row=1,column=2,sticky='w')
     def run(self):
         cmd=["ssDumper",getValue(value1),getValue(value2)]
-        if valueB.get():
+        if valueI.get()==0:
             cmd.append("-a")
+        elif valueI.get()==2:
+            cmd.append("-w")
         if valueB3.get():
             cmd.append("-d")
         if valueB1.get():
@@ -501,6 +509,12 @@ class setssPacker:
         if (value3.get()=="Output" or value3.get()=="") and file[file.rfind("\\"):].find(".")<0:
             value3.set(file+"_packed")
     def __init__(self):
+        def checkEnable():
+            if valueB.get():
+                buttonB1['state']='normal'
+            else:
+                valueB1.set(False)
+                buttonB1['state']='disabled'
         clear()
         name1=Label(inputFrame,text="Ss folder:")
         name2=Label(inputFrame,text="Text folder:")
@@ -527,12 +541,24 @@ class setssPacker:
         windnd.hook_dropfiles(entry2,dropValue2)
         windnd.hook_dropfiles(entry3,dropValue3)
         valueB.set(True)
-        buttonB=Checkbutton(inputFrame,text="Have Excel text file",variable=valueB)
-        buttonB.grid(row=8,padx=2,pady=4,sticky='e')
+        valueB1.set(False)
+        valueB2.set(False)
+        buttonB=Frame(inputFrame)
+        buttonB.grid(row=8,padx=2,pady=4,sticky='w')
+        buttonB0=Checkbutton(buttonB,text="Have Excel text",command=checkEnable,variable=valueB)
+        buttonB1=Checkbutton(buttonB,text="Bilingual display (For mobile only)",variable=valueB1)
+        buttonB2=Checkbutton(buttonB,text="Change quotation marks",variable=valueB2)
+        buttonB0.grid(row=0,column=0,sticky='w')
+        buttonB1.grid(row=0,column=1,sticky='w')
+        buttonB2.grid(row=1,column=0,sticky='e')
     def run(self):
         cmd=["ssPacker",getValue(value1),getValue(value2),getValue(value3)]
         if valueB.get():
             cmd.append("-x")
+            if valueB1.get():
+                cmd.append("-db")
+        if valueB2.get():
+            cmd.append("-q")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.setDaemon(True)
         runPy.start()
@@ -829,6 +855,7 @@ valueB=BooleanVar()
 valueB1=BooleanVar()
 valueB2=BooleanVar()
 valueB3=BooleanVar()
+valueI=IntVar()
 valueC=StringVar()
 
 keyVar=StringVar()

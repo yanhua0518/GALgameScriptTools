@@ -8,6 +8,7 @@ import struct
 import unicodedata
 from Decryption import Decrypt
 
+
 class Header:
     headerData=b''
     headerList=[]
@@ -29,7 +30,7 @@ class Header:
 def Check(scr):
     if fullDump:
         for char in scr:
-            if unicodedata.east_asian_width(char)='Na':
+            if unicodedata.east_asian_width(char)=='Na':
                 return False
         return True
     else:
@@ -44,9 +45,9 @@ def main(argv):
         argv.remove('-a')
     else:
         noDump=False
-    if argh.count('-w')>0:
+    if argv.count('-w')>0:
         fullDump=True
-        Argo.remove('-w')
+        argv.remove('-w')
     else:
         fullDump=False
     if argv.count('-d')>0:
@@ -67,7 +68,7 @@ def main(argv):
         singleXlsx=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a] [-c] [-x] [-s]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a/-w] [-c] [-x] [-s]")
         return False
 
     inF=argv[1]+"\\"
