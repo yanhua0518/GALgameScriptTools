@@ -27,10 +27,16 @@ class Header:
         H.dataCount=H.headerList[5]
 
 def Check(scr):
-    for char in scr:
-        if unicodedata.east_asian_width(char)!='Na':
-            return True
-    return False
+    if fullDump:
+        for char in scr:
+            if unicodedata.east_asian_width(char)='Na':
+                return False
+        return True
+    else:
+        for char in scr:
+            if unicodedata.east_asian_width(char)!='Na':
+                return True
+        return False
 
 def main(argv):
     if argv.count('-a')>0:
@@ -38,6 +44,11 @@ def main(argv):
         argv.remove('-a')
     else:
         noDump=False
+    if argh.count('-w')>0:
+        fullDump=True
+        Argo.remove('-w')
+    else:
+        fullDump=False
     if argv.count('-d')>0:
         copyLine=True
         argv.remove('-d')
