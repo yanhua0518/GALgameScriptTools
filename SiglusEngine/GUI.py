@@ -166,6 +166,19 @@ def select(event):
     title.pack_forget()
     title=Label(selectedFrame,text=tool[selected],font=('Fixdsys 14 bold'))
     title.pack()
+    if selected>3:
+        keyEntry['state']='disabled'
+        if hasList:
+            keySelect['state']='disabled'
+        if hasSkf:
+            kfButton['state']='disabled'
+    else:
+        keyEntry['state']='normal'
+        if hasList:
+            keySelect['state']='readonly'
+        if hasSkf:
+            kfButton['state']='normal'
+        
 
 def clear():
     global inputFrame
