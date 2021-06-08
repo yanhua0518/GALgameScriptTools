@@ -27,8 +27,9 @@ class Header:
         H.offset=H.headerList[4]
         H.dataCount=H.headerList[5]
 
-def Check(scr):
-    if fullDump:
+
+def check(scr,checkHalf):
+    if checkHalf:
         for char in scr:
             if unicodedata.east_asian_width(char)=='Na':
                 return False
@@ -68,7 +69,7 @@ def main(argv):
         singleXlsx=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a/-w] [-c] [-x] [-s]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a/-w] [-d] [-x [-s]]")
         return False
 
     inF=argv[1]+"\\"
@@ -125,7 +126,7 @@ def main(argv):
             file.seek(header.offset+offset[x]*2,0)
             string=file.read(length[x]*2)
             text=Decrypt(string,length[x],x).decode("UTF-16")
-            if not Check(text) and not noDump:
+            if not check(text,fullDump) and not noDump:
                 continue
             if xlsxMode:
                 if copyLine:
