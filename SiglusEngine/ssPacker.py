@@ -137,8 +137,8 @@ def main(argv):
                         index=int(a.value)
                     except:
                         continue
-                    text=c.value
-                    jp=b.value
+                    text=str(c.value)
+                    jp=str(b.value)
                     if text==None:
                         text=""
                     elif jp!=text and (len(text)>2 or len(jp)>2) and dbLine:
