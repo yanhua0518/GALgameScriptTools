@@ -138,10 +138,12 @@ def main(argv):
                     except:
                         continue
                     text=c.value
-                    jp=b.value
                     if text==None:
                         text=""
-                    elif jp!=text and (len(str(text))>2 or len(str(jp))>2) and dbLine:
+                    else:
+                        text=str(text)
+                    jp=str(b.value)
+                    if dbLine and jp!=text and (len(text)>2 or len(jp)>2):
                         if quotChange:
                             text=change(text)+'#NEWLINE'+jp
                         else:
