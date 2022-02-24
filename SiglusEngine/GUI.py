@@ -98,7 +98,7 @@ class findKey(threading.Thread):
     def __init__(self):
         global DECRYPT_KEY,typedKey,kfButton
         super(findKey,self).__init__()
-        self.setDaemon(True)
+        self.Daemon=True
         self.signal=threading.Event()
         self.signal.set()
     def stop(self):
@@ -288,7 +288,7 @@ class setSceneUnpacker:
     def run(self):
         cmd=["SceneUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -344,7 +344,7 @@ class setScenePacker:
             cmd.append("-c")
             cmd.append(str(comp))
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
         
@@ -375,7 +375,7 @@ class setGameexeUnpacker:
     def run(self):
         cmd=["GameexeUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -428,7 +428,7 @@ class setGameexePacker:
             cmd.append("-c")
             cmd.append(str(comp))
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -511,7 +511,7 @@ class setssDumper:
             if valueB2.get():
                 cmd.append("-s")
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -573,7 +573,7 @@ class setssPacker:
         if valueB2.get():
             cmd.append("-q")
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -610,7 +610,7 @@ class setdbsDecrypt:
         elif valueB1.get():
             cmd.append("-a")
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -653,7 +653,7 @@ class setdbsEncrypt:
             cmd.append("-c")
             cmd.append(str(comp))
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -705,7 +705,7 @@ class setdbsBuilder:
             cmd.append("-c")
             cmd.append(str(comp))
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -731,7 +731,7 @@ class setpckUnpacker:
     def run(self):
         cmd=["pckUnpacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
         
@@ -757,7 +757,7 @@ class setpckPacker:
     def run(self):
         cmd=["pckPacker",getValue(value1),getValue(value2)]
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -775,7 +775,7 @@ class setomvCuter:
     def run(self):
         cmd=["omvCuter",getValue(value1)]
         runPy=threading.Thread(target=running,args=(cmd,None))
-        runPy.setDaemon(True)
+        runPy.Daemon=True
         runPy.start()
         return 
 
@@ -810,7 +810,7 @@ class setsiglusOmv:
         else:
             cmd+=getValue(value2)+'"'
         runExe=threading.Thread(target=runningExe,args=(cmd.replace("*",""),))
-        runExe.setDaemon(True)
+        runExe.Daemon=True
         runExe.start()
         return 
 
