@@ -25,7 +25,63 @@ class Header:
         H.ExtraKeyUse=struct.unpack('I',f.read(4))[0]
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
+def stringKey(key):
+    keyHex=[]
+    for byte in key:
+        keyHex.append(hex(byte))
+    keyStr=str(keyHex).replace("[","").replace("]","").replace("'","")
+    return keyStr
+
+def searchKey(data):
+    key=[]
+    size=len(data)
+    sizeDec=struct.pack('I',size)
+    sizeEnc=data[:4]
+    for n in range(0,4):
+        key.append(sizeDec[n]^sizeEnc[n])
+    ptr=0
+    check=bytes([key[0]^31,key[1],key[2]^31,key[3]])
+    while data[ptr:ptr+4]!=check:
+        ptr+=16
+        if ptr>=size-size%16:
+            return []
+    ptr+=19
+    while not (data[ptr]==key[3] and data[ptr+16]==key[3]):
+        ptr+=16
+        if ptr>size-33:
+            return []
+    n=4
+    while n<16 and ptr<size-33:
+        if data[ptr+17]==data[ptr+33]:
+            ptr+=17
+            key.append(data[ptr])
+            n+=1
+        elif data[ptr+1]==data[ptr+33]:
+            ptr+=1
+            key.append(data[ptr])
+            n+=1
+        else:
+            while data[ptr-16]!=key[n-1]:
+                ptr-=16
+                if ptr<16:
+                    return []
+            ptr-=16
+    if len(key)<16:
+        return []
+    else:
+        return key
+
 def main(argv,key):
+    if argv.count('-n')>0:
+        undecomp=True
+        argv.remove('-n')
+    else:
+        undecomp=False
+    if argv.count('-f')>0:
+        keyOnly=True
+        argv.remove('-f')
+    else:
+        keyOnly=False
     
     if len(argv)<2 or argv[1]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\]")
@@ -74,27 +130,48 @@ def main(argv,key):
     SceneData=[]
     for n in range(0,header.SceneDataCount):
         scene.seek(header.SceneDataOffset+SceneDataOffset[n])
-        SceneData.append(scene.read(SceneDataLength[n]))
+        SceneData.append(Decrypt2(scene.read(SceneDataLength[n])))
         
     scene.close()
+    
+    if (header.ExtraKeyUse and key==[]) or keyOnly:
+        print("Searching key...")
+        try:
+            startIndex=SceneNameString.index(b'_\x00s\x00t\x00a\x00r\x00t\x00')
+        except:
+            for n in range(0,header.SceneDataCount):
+                startData=SceneData[n]
+                key=searchKey(startData)
+                if key:
+                    break
+        else:
+            startData=SceneData[startIndex]
+            key=searchKey(startData)
+        if key:
+            print("Key found!")
+            print(stringKey(key))
+            if keyOnly:
+                return key
+        else:
+            print("Key not found!")
 
     for n in range(0,header.SceneDataCount):
         fileName=SceneNameString[n].decode("UTF-16")+'.ss'
         print(fileName)
         if header.ExtraKeyUse:
-            data=Decrypt2(Decrypt1(SceneData[n],key))
+            data=Decrypt1(SceneData[n],key)
         else:
-            data=Decrypt2(SceneData[n])
-        '''
-        output=open(outF+fileName+'.undecompressed','wb')
-        output.write(data)
-        output.close()
-        '''
-        compSize,decompSize=struct.unpack('2I',data[:8])
-        decompData=Decompress(data[8:],decompSize)
-        output=open(outF+fileName,'wb')
-        output.write(decompData)
-        output.close()
+            data=SceneData[n]
+        if undecomp:
+            output=open(outF+fileName+'.undecompressed','wb')
+            output.write(data)
+            output.close()
+        else:
+            compSize,decompSize=struct.unpack('2I',data[:8])
+            decompData=Decompress(data[8:],decompSize)
+            output=open(outF+fileName,'wb')
+            output.write(decompData)
+            output.close()
     return True
 
 if __name__=="__main__":
