@@ -216,7 +216,7 @@ def getValue(v):
     
 
 def running(cmd,key):
-    global typedKey,DECRYPE_KEY
+    global typedKey,DECRYPT_KEY
     if key==None:
         code=cmd[0]+".main(cmd)"
     else:
