@@ -37,11 +37,13 @@ dbsBuilder封装建议一定要加-u命令封装为Unicode编码。ANSI编码仅
 现在支持拖拽文件了！  
 搜索Key大概不会再报错了……
 另外顺便给导出Excel格式的文本加了表格背景色，便于批量替换。  
-又加了点没什么用的功能。
+又加了点没什么用的功能。  
+给Scene的解包封包增加了自动从Scene中搜索Key的功能，
+稳定性未知，不过只要不是脸太黑就不需要再用skf搜索Key了。  
 ***
 ## Usage:
 ```
-SceneUnpacker.py <Scene.pck> [Scene\]
+SceneUnpacker.py <Scene.pck> [Scene\]/[-f]
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
 
 GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
