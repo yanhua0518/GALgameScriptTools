@@ -40,37 +40,28 @@ def searchKey(data):
     for n in range(0,4):
         key.append(sizeDec[n]^sizeEnc[n])
     ptr=0
-    check=bytes([key[0]^31,key[1],key[2]^31,key[3]])
+    check=bytes([key[0],key[1],key[2]^31,key[3]])
     while data[ptr:ptr+4]!=check:
         ptr+=16
         if ptr>size-36:
             return []
-    ptr+=3
-    while not (data[ptr]==key[3] and data[ptr+16]==key[3]):
+    check=[[],[],[]]
+    x=0
+    for n in range(0,3):
+        x^=31
+        for byte in data[ptr+4:ptr+16]:
+            check[n].append(byte^x)
+            x^=31
         ptr+=16
-        if ptr>size-33:
-            return []
-    n=4
-    ptr+=16
-    while n<16 and ptr<size-33:
-        if data[ptr+1]==data[ptr+17]:
-            ptr+=17
-            key.append(data[ptr])
-            n+=1
-        elif data[ptr-15]==data[ptr+17]:
-            ptr-=15
-            key.append(data[ptr])
-            n+=1
-        else:
-            ptr-=16
-            while data[ptr]!=key[n-1]:
-                ptr-=16
-                if ptr<16:
-                    return []
-    if len(key)<16:
-        return []
+        print(check[n])
+    if check[0]==check[1]:
+        key.extend(check[0])
+    elif check[1]==check[2]:
+        key.extend(check[1])
     else:
-        return key
+        return []
+    return key
+
 
 def main(argv,key):
     if argv.count('-n')>0:
@@ -164,6 +155,7 @@ def main(argv,key):
                 return key
         else:
             print("Key not found!")
+            return False
     
     if dftKey:
         print("Use default key.")
