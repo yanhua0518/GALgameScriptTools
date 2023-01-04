@@ -43,29 +43,30 @@ def searchKey(data):
     check=bytes([key[0]^31,key[1],key[2]^31,key[3]])
     while data[ptr:ptr+4]!=check:
         ptr+=16
-        if ptr>=size-size%16:
+        if ptr>size-36:
             return []
-    ptr+=19
+    ptr+=3
     while not (data[ptr]==key[3] and data[ptr+16]==key[3]):
         ptr+=16
         if ptr>size-33:
             return []
     n=4
+    ptr+=16
     while n<16 and ptr<size-33:
-        if data[ptr+17]==data[ptr+33]:
+        if data[ptr+1]==data[ptr+17]:
             ptr+=17
             key.append(data[ptr])
             n+=1
-        elif data[ptr+1]==data[ptr+33]:
-            ptr+=1
+        elif data[ptr-15]==data[ptr+17]:
+            ptr-=15
             key.append(data[ptr])
             n+=1
         else:
-            while data[ptr-16]!=key[n-1]:
+            ptr-=16
+            while data[ptr]!=key[n-1]:
                 ptr-=16
                 if ptr<16:
                     return []
-            ptr-=16
     if len(key)<16:
         return []
     else:
@@ -139,14 +140,18 @@ def main(argv,key):
         try:
             startIndex=SceneNameString.index(b'_\x00s\x00t\x00a\x00r\x00t\x00')
         except:
+            pass
+        else:
+            print('_start')
+            startData=SceneData[startIndex]
+            key=searchKey(startData)
+        if not key:
             for n in range(0,header.SceneDataCount):
+                print(SceneNameString[n].decode("UTF-16"))
                 startData=SceneData[n]
                 key=searchKey(startData)
                 if key:
                     break
-        else:
-            startData=SceneData[startIndex]
-            key=searchKey(startData)
         if key:
             print("Key found!")
             print(stringKey(key))
@@ -154,7 +159,7 @@ def main(argv,key):
                 return key
         else:
             print("Key not found!")
-
+    #key=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     for n in range(0,header.SceneDataCount):
         fileName=SceneNameString[n].decode("UTF-16")+'.ss'
         print(fileName)
