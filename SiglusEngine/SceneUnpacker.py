@@ -53,7 +53,7 @@ def searchKey(data):
             check[n].append(byte^x)
             x^=31
         ptr+=16
-        print(check[n])
+        #print(check[n])
     if check[0]==check[1]:
         key.extend(check[0])
     elif check[1]==check[2]:
