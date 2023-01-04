@@ -6,10 +6,12 @@ import os
 from ctypes import *
 import struct
 
-
-# Change this key to your game's key.
+DEFAULT_KEY=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+'''
+Change this key to your game's key.
 DEFAULT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
              0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
+'''
 
 def Decrypt(string,l,k):
     key=28807
@@ -75,6 +77,7 @@ def Compress(string,level):
     p=dll.compress(string,length,pointer(size),level)
     newString=string_at(p,size)
     return newString
+
 
 try:
     dll=CDLL(os.getcwd()+'\\Decryption.dll')

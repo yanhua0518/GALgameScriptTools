@@ -5,28 +5,14 @@ import sys
 import os
 import struct
 from Decryption import Decrypt1,Decrypt2,FakeCompress,Compress
-
-class Header:
-    def __init__(H,f):
-        f.seek(0)
-        H.length=struct.unpack('I',f.read(4))[0]
-        H.headerData=f.read(80)
-        f.seek(4)
-        H.varInfoOffset,H.varInfoCount=struct.unpack('2I',f.read(8))
-        H.varNameIndexOffset,H.varNameIndexCount=struct.unpack('2I',f.read(8))
-        H.varNameOffset,H.varNameCount=struct.unpack('2I',f.read(8))
-        H.cmdInfoOffset,H.cmdInfoCount=struct.unpack('2I',f.read(8))
-        H.cmdNameIndexOffset,H.cmdNameIndexCount=struct.unpack('2I',f.read(8))
-        H.cmdNameOffset,H.cmdNameCount=struct.unpack('2I',f.read(8))
-        H.SceneNameIndexOffset,H.SceneNameIndexCount=struct.unpack('2I',f.read(8))
-        H.SceneNameOffset,H.SceneNameCount=struct.unpack('2I',f.read(8))
-        H.SceneInfoOffset,H.SceneInfoCount=struct.unpack('2I',f.read(8))
-        H.SceneDataOffset,H.SceneDataCount=struct.unpack('2I',f.read(8))
-        H.ExtraKeyUse=struct.unpack('I',f.read(4))[0]
-        H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
+from SceneUnpacker import Header,stringKey,searchKey
 
 def main(argv,key):
-    
+    if argv.count('-d')>0:
+        dftKey=True
+        argv.remove('-d')
+    else:
+        dftKey=False
     if argv.count('-c')>0:
         try:
             comp=int(argv[argv.index('-c')+1])
@@ -86,9 +72,34 @@ def main(argv,key):
     scene.seek(header.SceneDataOffset)
     SceneData=[]
     for n in range(0,header.SceneDataCount):
-        SceneData.append(scene.read(SceneDataLength[n]))
+        SceneData.append(Decrypt2(scene.read(SceneDataLength[n])))
         
-
+    if header.ExtraKeyUse and key==[] and not dftKey:
+        print("Searching key...")
+        try:
+            startIndex=SceneNameString.index(b'_\x00s\x00t\x00a\x00r\x00t\x00')
+        except:
+            pass
+        else:
+            print('_start')
+            startData=SceneData[startIndex]
+            key=searchKey(startData)
+        if not key:
+            for n in range(0,header.SceneDataCount):
+                print(SceneNameString[n].decode("UTF-16"))
+                startData=SceneData[n]
+                key=searchKey(startData)
+                if key:
+                    break
+        if key:
+            print("Key found!")
+            print(stringKey(key))
+        else:
+            print("Key not found!")
+    
+    if dftKey:
+        print("Use default key.")
+        #key=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     for n in range(0,header.SceneDataCount):
         fileName=SceneNameString[n].decode("UTF-16")+'.ss'
         try:
@@ -110,9 +121,9 @@ def main(argv,key):
         compFile.close()
         '''
         if header.ExtraKeyUse:
-            SceneData[n]=Decrypt2(Decrypt1(compData,key))
+            SceneData[n]=Decrypt1(compData,key)
         else:
-            SceneData[n]=Decrypt2(compData)
+            SceneData[n]=compData
         SceneDataLength[n]=len(compData)
         ssFile.close()
         
@@ -131,7 +142,7 @@ def main(argv,key):
         output.write(struct.pack('2I',offset,SceneDataLength[n]))
         offset+=SceneDataLength[n]
     for n in range(0,header.SceneDataCount):
-        output.write(SceneData[n])
+        output.write(Decrypt2(SceneData[n]))
     scene.close()
     output.close()
     return True

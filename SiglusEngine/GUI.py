@@ -22,22 +22,12 @@ BUTTON_WIDTH=6
 PAD=4
 lastDir=os.getcwd()
 typedKey=True
-hasList=False
 hasSkf=False
 singleProcess=False
-DECRYPT_KEY=[0x2E, 0x4B, 0xDD, 0x2A, 0x7B, 0xB0, 0x0A, 0xBA,
-             0xF8, 0x1A, 0xF9, 0x61, 0xB0, 0x18, 0x98, 0x5C]
+DECRYPT_KEY=[]
 KEY_FILE="SiglusKey.txt"
 KEY_LIST="KeyList.txt"
 cmdOutput=sys.stdout
-
-
-def stringKey(key):
-    keyHex=[]
-    for byte in key:
-        keyHex.append(hex(byte))
-    keyStr=str(keyHex).replace("[","").replace("]","").replace("'","")
-    return keyStr
 
 def setKey(keyStr):
     keyHex=keyStr.split(',')
@@ -58,7 +48,7 @@ def loadKey():
         return key
 
 def saveKey():
-    keyStr=stringKey(DECRYPT_KEY)
+    keyStr=SceneUnpacker.stringKey(DECRYPT_KEY)
     file=open(KEY_FILE,'w')
     file.write(keyStr)
     file.close()
@@ -78,10 +68,15 @@ def start():
     optionList.selection_set(lastSelect)
     try:
         if lastSelect<4:
-            tempKey=setKey(keyVar.get())
-            if tempKey:
-                DECRYPT_KEY=tempKey
+            if keySelect.current()!=0:
+                tempKey=setKey(keyVar.get())
+                if tempKey:
+                    DECRYPT_KEY=tempKey
+            elif lastSelect>1:
+                1/0
         check=option.run()
+    except ZeroDivisionError:
+        messagebox.showerror("Error!","Can't find key from Gameexe!")
     except:
         messagebox.showerror("Error!","Error!\nKey is wrong?")
     '''
@@ -142,9 +137,8 @@ class findKey(threading.Thread):
             DECRYPT_KEY=newKey
             typedKey=True
             keyVar.set(keyStr)
-            if hasList:
-                keySelect.current(0)
-                keyList[0]=stringKey(DECRYPT_KEY)
+            keySelect.current(1)
+            keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
             kfButton['text']="Find Key"
 
 def clickFindKey():
@@ -168,14 +162,12 @@ def select(event):
     title.pack()
     if selected>3:
         keyEntry['state']='disabled'
-        if hasList:
-            keySelect['state']='disabled'
+        keySelect['state']='disabled'
         if hasSkf:
             kfButton['state']='disabled'
     else:
         keyEntry['state']='normal'
-        if hasList:
-            keySelect['state']='readonly'
+        keySelect['state']='readonly'
         if hasSkf:
             kfButton['state']='normal'
         
@@ -217,6 +209,7 @@ def getValue(v):
     
 
 def running(cmd,key):
+    global typedKey,DECRYPE_KEY
     if key==None:
         code=cmd[0]+".main(cmd)"
     else:
@@ -228,8 +221,14 @@ def running(cmd,key):
     check=eval(code)
     if check:
         messagebox.showinfo("Notice","Finished!")
+        if lastSelect==0 and check!=True:
+            DECRYPT_KEY=check
+            typedKey=True
+            keySelect.current(1)
+            keyVar.set(SceneUnpacker.stringKey(DECRYPT_KEY))
         if lastSelect<4 and typedKey:
             saveKey()
+            
     else:
         messagebox.showwarning("Warning","Input error!")
     cmdText['state']='disabled'
@@ -268,6 +267,21 @@ class setSceneUnpacker:
         if (value2.get()=="Scene" or value2.get()=="") and file.find(".pck")>0:
             value2.set(file.replace('.pck',''))
     def __init__(self):
+        
+        def checkFind():
+            if valueB.get():
+                name2['state']='disabled'
+                entry2['state']='disabled'
+                button2['state']='disabled'
+                keySelect['state']='disabled'
+                keyEntry['state']='disabled'
+            else:
+                name2['state']='normal'
+                entry2['state']='normal'
+                button2['state']='normal'
+                keySelect['state']='readonly'
+                keyEntry['state']='normal'
+                
         clear()
         name1=Label(inputFrame,text="Scene file:")
         name2=Label(inputFrame,text="Output folder:")
@@ -283,11 +297,22 @@ class setSceneUnpacker:
         button2=Button(inputFrame,text="Select",width=BUTTON_WIDTH,command=lambda:selectFolder(value2))
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
+        valueB.set(False)
+        buttonB=Checkbutton(inputFrame,text="Find key only",command=checkFind,variable=valueB)
+        buttonB.grid(row=4,padx=2,pady=4,sticky='e')
         windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
-        cmd=["SceneUnpacker",getValue(value1),getValue(value2)]
-        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        cmd=["SceneUnpacker",getValue(value1)]
+        if valueB.get():
+            cmd.append("-f")
+        else:
+            cmd.append(getValue(value2))
+        if keySelect.current()==0 or valueB.get():
+            tempKey=[]
+        else:
+            tempKey=DECRYPT_KEY
+        runPy=threading.Thread(target=running,args=(cmd,tempKey))
         runPy.Daemon=True
         runPy.start()
         return 
@@ -343,7 +368,11 @@ class setScenePacker:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
-        runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
+        if keySelect.current()==0:
+            tempKey=[]
+        else:
+            tempKey=DECRYPT_KEY
+        runPy=threading.Thread(target=running,args=(cmd,tempKey))
         runPy.Daemon=True
         runPy.start()
         return 
@@ -881,7 +910,7 @@ startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 if tempKey:
     DECRYPT_KEY=tempKey
-keyVar.set(stringKey(DECRYPT_KEY))
+    keyVar.set(SceneUnpacker.stringKey(DECRYPT_KEY))
 keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
 keyEntry.bind("<Control-Key-v>",unlock)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
@@ -902,25 +931,25 @@ keyLabel.pack(side='left',anchor='w')
 try:
     listFile=open(KEY_LIST,'r',1,'UTF-8')
 except:
-    hasList=False
+    keyList=["",SceneUnpacker.stringKey(DECRYPT_KEY)]
+    keyName=["Try to find key when working on Scene","Last use"]
 else:
-    hasList=True
-    keyList=[stringKey(DECRYPT_KEY)]
-    keyName=[""]
+    keyList=["",SceneUnpacker.stringKey(DECRYPT_KEY)]
+    keyName=["Try to find key when working on Scene","Last use"]
     for line in listFile.readlines():
         if line[-2:]=='：\n':
             keyName.append(line[:-2])
         elif line!='\n':
             keyList.append(line[:-1])
     listFile.close()
-    if hasSkf:
-        listWidth=46
-    else:
-        listWidth=56
-    keySelect=Combobox(keyInfo,width=listWidth,state='readonly',value=keyName)
-    keySelect.bind("<<ComboboxSelected>>",selectKey)
-    keySelect.current(0)
-    keySelect.pack(side='left',anchor='e')
+if hasSkf:
+    listWidth=46
+else:
+    listWidth=56
+keySelect=Combobox(keyInfo,width=listWidth,state='readonly',value=keyName)
+keySelect.bind("<<ComboboxSelected>>",selectKey)
+keySelect.current(1)
+keySelect.pack(side='left',anchor='e')
 
 optionLabel=Label(optionFrame,text="Select option:")
 optionLabel.pack(side='top',anchor='w')

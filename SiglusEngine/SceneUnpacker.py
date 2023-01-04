@@ -83,25 +83,30 @@ def main(argv,key):
         argv.remove('-f')
     else:
         keyOnly=False
+    if argv.count('-d')>0:
+        dftKey=True
+        argv.remove('-d')
+    else:
+        dftKey=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\]/[-f]")
         return False
 
-    if len(argv)<3 or argv[2]=='':
-        outF=argv[0][:argv[0].rfind("\\")+1]+"Scene\\"
-    else:
-        outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
-
+    if not keyOnly:
+        if len(argv)<3 or argv[2]=='':
+            outF=argv[0][:argv[0].rfind("\\")+1]+"Scene\\"
+        else:
+            outF=argv[0][:argv[0].rfind("\\")+1]+argv[2]+"\\"
+        if not os.path.exists(outF):
+            os.makedirs(outF)
+            
     try:
         f=open(argv[1],'rb')
         f.read()
         f.close()
     except:
         return False
-    
-    if not os.path.exists(outF):
-        os.makedirs(outF)
 
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
@@ -135,7 +140,7 @@ def main(argv,key):
         
     scene.close()
     
-    if (header.ExtraKeyUse and key==[]) or keyOnly:
+    if (header.ExtraKeyUse and key==[] and not dftKey) or keyOnly:
         print("Searching key...")
         try:
             startIndex=SceneNameString.index(b'_\x00s\x00t\x00a\x00r\x00t\x00')
@@ -159,7 +164,10 @@ def main(argv,key):
                 return key
         else:
             print("Key not found!")
-    #key=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    
+    if dftKey:
+        print("Use default key.")
+        #key=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     for n in range(0,header.SceneDataCount):
         fileName=SceneNameString[n].decode("UTF-16")+'.ss'
         print(fileName)
