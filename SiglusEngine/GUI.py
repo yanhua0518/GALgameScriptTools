@@ -47,11 +47,17 @@ def loadKey():
     else:
         return key
 
-def saveKey():
-    keyStr=SceneUnpacker.stringKey(DECRYPT_KEY)
+def saveKey(key):
+    keyStr=SceneUnpacker.stringKey(key)
     file=open(KEY_FILE,'w')
     file.write(keyStr)
     file.close()
+    if cmdText['state']=='disabled':
+        cmdText['state']='normal'
+        print("Last key saved!")
+        cmdText['state']='disabled'
+    else:
+        print("Last key saved!")
     return True
 
 def selectKey(value):
@@ -68,7 +74,7 @@ def start():
     optionList.selection_set(lastSelect)
     try:
         if lastSelect<4:
-            if keySelect.current()!=0:
+            if keySelect.current()!=0 and keyEntry['state']!='disabled':
                 tempKey=setKey(keyVar.get())
                 if tempKey:
                     DECRYPT_KEY=tempKey
@@ -84,14 +90,14 @@ def start():
         if check:
             messagebox.showinfo("Notice","Finished!")
             if lastSelect<4 and typedKey:
-                saveKey()
+                saveKey(DECRYPT_KEY)
         else:
             messagebox.showwarning("Warning","Input error!")
     '''
 
 class findKey(threading.Thread):
     def __init__(self):
-        global DECRYPT_KEY,typedKey,kfButton
+        global DECRYPT_KEY,typedKey
         super(findKey,self).__init__()
         self.Daemon=True
         self.signal=threading.Event()
@@ -140,6 +146,7 @@ class findKey(threading.Thread):
             keySelect.current(1)
             keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
             kfButton['text']="Find Key"
+            saveKey(DECRYPT_KEY)
 
 def clickFindKey():
     global finding
@@ -224,10 +231,11 @@ def running(cmd,key):
         if lastSelect==0 and check!=True:
             DECRYPT_KEY=check
             typedKey=True
+            keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
             keySelect.current(1)
-            keyVar.set(SceneUnpacker.stringKey(DECRYPT_KEY))
+            keyVar.set(keyList[1])
         if lastSelect<4 and typedKey:
-            saveKey()
+            saveKey(DECRYPT_KEY)
             
     else:
         messagebox.showwarning("Warning","Input error!")
@@ -910,7 +918,7 @@ startButton.pack(side='right',padx=PAD,pady=PAD,anchor='e')
 
 if tempKey:
     DECRYPT_KEY=tempKey
-    keyVar.set(SceneUnpacker.stringKey(DECRYPT_KEY))
+    #keyVar.set(SceneUnpacker.stringKey(DECRYPT_KEY))
 keyEntry=Entry(keyFrame,width=80,textvariable=keyVar)
 keyEntry.bind("<Control-Key-v>",unlock)
 keyEntry.pack(side='left',padx=PAD,pady=PAD,anchor='w')
@@ -948,7 +956,7 @@ else:
     listWidth=56
 keySelect=Combobox(keyInfo,width=listWidth,state='readonly',value=keyName)
 keySelect.bind("<<ComboboxSelected>>",selectKey)
-keySelect.current(1)
+keySelect.current(0)
 keySelect.pack(side='left',anchor='e')
 
 optionLabel=Label(optionFrame,text="Select option:")
