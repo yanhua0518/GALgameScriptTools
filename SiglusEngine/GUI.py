@@ -73,8 +73,8 @@ def start():
     global lastSelect,option,DECRYPT_KEY
     optionList.selection_set(lastSelect)
     try:
-        if lastSelect<4:
-            if keySelect.current()!=0 and keyEntry['state']!='disabled':
+        if lastSelect<4 and keyEntry['state']=='normal':
+            if keySelect.current()!=0:
                 tempKey=setKey(keyVar.get())
                 if tempKey:
                     DECRYPT_KEY=tempKey
@@ -85,15 +85,6 @@ def start():
         messagebox.showerror("Error!","Can't find key from Gameexe!")
     except:
         messagebox.showerror("Error!","Error!\nKey is wrong?")
-    '''
-    else:
-        if check:
-            messagebox.showinfo("Notice","Finished!")
-            if lastSelect<4 and typedKey:
-                saveKey(DECRYPT_KEY)
-        else:
-            messagebox.showwarning("Warning","Input error!")
-    '''
 
 class findKey(threading.Thread):
     def __init__(self):
@@ -167,11 +158,14 @@ def select(event):
     title.pack_forget()
     title=Label(selectedFrame,text=tool[selected],font=('Fixdsys 14 bold'))
     title.pack()
-    if selected>3:
+    if selected>2:
         keyEntry['state']='disabled'
         keySelect['state']='disabled'
         if hasSkf:
-            kfButton['state']='disabled'
+            if selected>3:
+                kfButton['state']='disabled'
+            else:
+                kfButton['state']='normal'
     else:
         keyEntry['state']='normal'
         keySelect['state']='readonly'
@@ -427,6 +421,15 @@ class setGameexePacker:
         if (value2.get()=="Gameexe.dat2" or value2.get()=="") and (file.lower().find("gameexe.ini")>0 or file.lower().find("gameexe.txt")>0):
             value2.set(file.lower().replace("gameexe.ini","Gameexe.dat2").replace("gameexe.txt","Gameexe.dat2"))
     def __init__(self):
+
+        def checkDB():
+            if valueB.get():
+                keySelect['state']='readonly'
+                keyEntry['state']='normal'
+            else:
+                keySelect['state']='disabled'
+                keyEntry['state']='disabled'
+                
         clear()
         name1=Label(inputFrame,text="Gameexe:")
         name2=Label(inputFrame,text="Output file:")
@@ -450,7 +453,7 @@ class setGameexePacker:
         entryC=Entry(inputFrame,width=4,textvariable=valueC)
         entryC.grid(row=7,column=1,padx=2,pady=4)
         valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Double Encryption(Useless)",variable=valueB)
+        buttonB=Checkbutton(inputFrame,text="Double Encryption(Useless)",command=checkDB,variable=valueB)
         buttonB.grid(row=8,padx=2,pady=4,sticky='e')
     def run(self):
         cmd=["GameexePacker",getValue(value1),getValue(value2),getValue(value3)]
