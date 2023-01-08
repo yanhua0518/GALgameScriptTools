@@ -4,7 +4,8 @@
 解包、封包Scene.pck和Gameexe.dat时所需的秘钥。格式为16进制逗号分割。  
 下拉选项选择第一项时，解包、封包Scene.pck会尝试自动搜索秘钥。  
 存在KeyList.txt时可以在下拉选项中选择已知的秘钥。  
-Find Key按钮用于通过启动游戏搜索秘钥。未找到skf.exe时不会出现。  
+### Find Key
+用于通过启动游戏搜索秘钥。未找到skf.exe时不会出现。  
 启动游戏后，点击Find Key，等待一段时间以后会提示是否找到秘钥。  
 找到的秘钥会保存在Last use。  
 ### Unpack Scene
