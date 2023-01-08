@@ -31,11 +31,13 @@ def main(argv,key):
     if needKey==b'\x01\x00\x00\x00':
         data=Decrypt1(data,key)
     compSize,decompSize=struct.unpack('2I',data[:8])
-    data=Decompress(data[8:],decompSize)
-
-    output=open(outFN,'wb')
-    output.write(b'\xff\xfe'+data)
-    output.close()
+    try:
+        data=Decompress(data[8:],decompSize)
+        output=open(outFN,'wb')
+        output.write(b'\xff\xfe'+data)
+        output.close()
+    except Exception as e:
+        return e
     return True
 
 if __name__=="__main__":

@@ -98,7 +98,7 @@ def main(argv,key):
         f.close()
     except:
         return False
-
+    countError=0
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
     header=Header(scene)
@@ -155,7 +155,7 @@ def main(argv,key):
                 return key
         else:
             print("Key not found!")
-            return False
+            return "Key not found!"
     
     if dftKey:
         print("Use default key.")
@@ -168,16 +168,30 @@ def main(argv,key):
         else:
             data=SceneData[n]
         if undecomp:
-            output=open(outF+fileName+'.undecompressed','wb')
-            output.write(data)
-            output.close()
+            try:
+                output=open(outF+fileName+'.undecompressed','wb')
+                output.write(data)
+                output.close()
+            except:
+                print("Output file error!")
+                countError+=1
         else:
             compSize,decompSize=struct.unpack('2I',data[:8])
-            decompData=Decompress(data[8:],decompSize)
-            output=open(outF+fileName,'wb')
-            output.write(decompData)
-            output.close()
-    return True
+            try:
+                decompData=Decompress(data[8:],decompSize)
+            except Exception as e:
+                return e
+            try:
+                output=open(outF+fileName,'wb')
+                output.write(decompData)
+                output.close()
+            except:
+                print("Output file error!")
+                countError+=1
+    if countError:
+        return countError
+    else:
+        return True
 
 if __name__=="__main__":
     main(sys.argv,[])

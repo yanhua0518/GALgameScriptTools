@@ -83,11 +83,16 @@ def main(argv):
         outF=argv[2]+"\\"
     if not os.path.exists(outF):
         os.makedirs(outF)
-    
+    countError=0
     for inFN in glob.glob(inF+"*.xlsx"):
         print(inFN)
         outFN=outF+inFN[inFN.rfind("\\")+1:].replace('.xlsx','.dbs').replace('.dbs.dbs','.dbs')
-        workBook=openpyxl.load_workbook(inFN)
+        try:
+            workBook=openpyxl.load_workbook(inFN)
+        except:
+            print("Input file error!")
+            countError+=1
+            continue
         workSheet=workBook.active
         for cell in workSheet['A']:
             if cell.value=="#DATANO":
@@ -207,16 +212,18 @@ def main(argv):
         dbsFile.close()
         '''
         data=Decrypt5(dataA)
-
-        output=open(outFN,'wb')
-        if isUTF:
-            output.write(b'\x01\x00\x00\x00')
-        else:
-            output.write(b'\x00\x00\x00\x00')
-        output.write(data)
-        output.close()
-        if lineCount>100:
-            print("Done!")
+        try:
+            output=open(outFN,'wb')
+            if isUTF:
+                output.write(b'\x01\x00\x00\x00')
+            else:
+                output.write(b'\x00\x00\x00\x00')
+            output.write(data)
+            output.close()
+            if lineCount>100:
+                print("Done!")
+        except Exception as e:
+            return e
     return True
 if __name__=="__main__":
     main(sys.argv)

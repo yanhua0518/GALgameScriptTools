@@ -223,14 +223,16 @@ def main(argv):
     dbsFile.close()
     '''
     data=Decrypt5(dataA)
-
-    output=open(outFN,'wb')
-    if isUTF:
-        output.write(b'\x01\x00\x00\x00')
-    else:
-        output.write(b'\x00\x00\x00\x00')
-    output.write(data)
-    output.close()
+    try:
+        output=open(outFN,'wb')
+        if isUTF:
+            output.write(b'\x01\x00\x00\x00')
+        else:
+            output.write(b'\x00\x00\x00\x00')
+        output.write(data)
+        output.close()
+    except Exception as e:
+        return e
     return True
 
 if __name__=="__main__":

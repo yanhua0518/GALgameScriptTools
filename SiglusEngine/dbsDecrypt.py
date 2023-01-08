@@ -96,10 +96,13 @@ def main(argv):
     if xlsxMode:
         file=BytesIO(dataC)
     else:
-        output=open(argv[1]+'.out','wb')
-        output.write(dataC)
-        output.close()
-        file=open(argv[1]+'.out','rb')
+        try:
+            output=open(argv[1]+'.out','wb')
+            output.write(dataC)
+            output.close()
+            file=open(argv[1]+'.out','rb')
+        except Exception as e:
+            return e
 
     header=Header(file)
     file.seek(header.lineIndexOffset)
@@ -159,9 +162,15 @@ def main(argv):
             workSheet.append(tempLine)
         workSheetCopy=workBook.copy_worksheet(workSheet)
         workSheetCopy.title="Text"
-        workBook.save(xls)
+        try:
+            workBook.save(xls)
+        except Exception as e:
+            return e
     else:
-        txt=open(argv[1]+'.txt','w',1,"UTF-16")  
+        try:
+            txt=open(argv[1]+'.txt','w',1,"UTF-16")
+        except Exception as e:
+            return e
         if isUTF:
             txt.write('Unicode\n')
         else:

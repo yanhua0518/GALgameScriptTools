@@ -67,11 +67,16 @@ def main(argv):
         argv.remove('-s')
     else:
         singleXlsx=False
+    if argv.count('-c')>0:
+        countWords=True
+        argv.remove('-c')
+    else:
+        countWords=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-d] [-a/-w] [-x [-s]]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-d] [-a/-w] [-x [-s [-c]]]")
         return False
-
+    countError=0
     inF=argv[1]+"\\"
     if len(argv)<3 or argv[2]=='':
         outF=argv[0][:argv[0].rfind("\\")+1]+argv[1][argv[1].rfind("\\")+1:]+"_out\\"
@@ -82,6 +87,10 @@ def main(argv):
         os.makedirs(outF)
     if xlsxMode and singleXlsx:
         workBook=openpyxl.Workbook()
+        if countWords:
+            countSheet=workBook.active
+            countSheet.title='Statistics'
+            countSheet.column_dimensions['A'].width=40
         outXLS=outF[:outF.rfind("\\")].replace(".xlsx","")+".xlsx"
     
     for inFN in glob.glob(inF+"*.ss"):
@@ -89,6 +98,7 @@ def main(argv):
         if xlsxMode:
             name=inFN[inFN.rfind("\\")+1:]
             sheet=name[:31]
+            countLen=0
             if not singleXlsx:
                 outXLS=outF+inFN[inFN.rfind("\\")+1:]+".xlsx"
                 workBook=openpyxl.Workbook()
@@ -97,8 +107,8 @@ def main(argv):
             else:
                 workSheet=workBook.create_sheet(sheet)
             workSheet.column_dimensions['A'].width=8
-            workSheet.column_dimensions['B'].width=61
-            workSheet.column_dimensions['C'].width=61
+            workSheet.column_dimensions['B'].width=64
+            workSheet.column_dimensions['C'].width=64
             fillColor=openpyxl.styles.PatternFill(fill_type="solid", fgColor="F2F2F2")
             border=openpyxl.styles.Border(top=openpyxl.styles.Side(style='thin',color='D0D7E5'),left=openpyxl.styles.Side(style='thin',color='D0D7E5'),right=openpyxl.styles.Side(style='thin',color='D0D7E5'))
             if name!=sheet:
@@ -108,11 +118,20 @@ def main(argv):
             workSheet.append(["Index","Text","Translation",tempName])
         else:
             outFN=outF+inFN[inFN.rfind("\\")+1:]+".txt"
-            output=open(outFN,'w',1,"UTF-8")
-        
-        size=os.path.getsize(inFN)
-        file=open(inFN,'rb')
-        header=Header(file)
+            try:
+                output=open(outFN,'w',1,"UTF-8")
+            except:
+                print("Output file error!")
+                countError+=1
+                continue
+        try:
+            size=os.path.getsize(inFN)
+            file=open(inFN,'rb')
+            header=Header(file)
+        except:
+            print("Input file error!")
+            countError+=1
+            continue
         file.seek(header.index)
         offset=[]
         length=[]
@@ -129,6 +148,7 @@ def main(argv):
             if not check(text,fullDump) and not noDump:
                 continue
             if xlsxMode:
+                countLen+=len(text)
                 if copyLine:
                     workSheet.append([x,text,text])
                 else:
@@ -147,16 +167,31 @@ def main(argv):
             if textLine==1 and singleXlsx:
                 workBook.remove(workSheet)
             elif textLine>1 and not singleXlsx:
-                workBook.save(outXLS)
+                try:
+                    workBook.save(outXLS)
+                except:
+                    print("Output file error!")
+                    countError+=1
+            elif singleXlsx and countWords:
+                countSheet.append([sheet,countLen])
         else:
             output.close()
             if os.path.getsize(outFN)==0:
                 os.remove(outFN)
     if singleXlsx:
         print("Saving xlsx file...")
-        workBook.remove(workBook['Sheet'])
-        workBook.save(outXLS)
-    return True
+        if not countWords:
+            workBook.remove(workBook['Sheet'])
+        try:
+            workBook.save(outXLS)
+        except Exception as e:
+            print("Output file error!")
+            return e
+            
+    if countError:
+        return countError
+    else:
+        return True
 
 if __name__=="__main__":
     main(sys.argv)

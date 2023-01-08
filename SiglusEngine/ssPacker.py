@@ -91,7 +91,7 @@ def main(argv):
     if len(argv)<3 or argv[1]=='' or argv[2]=='':
         print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\] [-x [-b]] [-q]")
         return False
-
+    countError=0
     inF=argv[1]+"\\"
     txtF=argv[2]+"\\"
     if len(argv)<4 or argv[3]=='':
@@ -106,8 +106,18 @@ def main(argv):
         print(txtFN)
         inFN=inF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
         outFN=outF+txtFN[txtFN.rfind("\\")+1:].replace(".txt",".ss").replace(".ss.ss",".ss")
-        SS=ss(inFN)
-        txt=open(txtFN,'r',1,"UTF-8")
+        try:
+            SS=ss(inFN)
+        except:
+            print("ss file not found!")
+            countError+=1
+            continue
+        try:
+            txt=open(txtFN,'r',1,"UTF-8")
+        except:
+            print("Input file error!")
+            countError+=1
+            continue
         for line in txt.readlines():
             if not line[0]==u"●":
                 continue
@@ -118,12 +128,21 @@ def main(argv):
             SS.length[index]=len(text)
             SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
         txt.close()
-        SS.write(outFN)
+        try:
+            SS.write(outFN)
+        except:
+            countError+=1
+            print("Output file error!")
 
     if xlsxMode:
         for txtFN in glob.glob(txtF+"*.xlsx"):
             print(txtFN)
-            workBook=openpyxl.load_workbook(txtFN)
+            try:
+                workBook=openpyxl.load_workbook(txtFN)
+            except:
+                countError+=1
+                print("Input file error!")
+                continue
             for sheet in workBook:
                 name=sheet['D1'].value
                 if name==None or name=="" or len(sheet.title)<31:
@@ -131,7 +150,12 @@ def main(argv):
                 print(name)
                 inFN=inF+name
                 outFN=outF+name
-                SS=ss(inFN)
+                try:
+                    SS=ss(inFN)
+                except:
+                    countError+=1
+                    print("ss file not found!")
+                    continue
                 for a,b,c in zip(sheet['A'],sheet['B'],sheet['C']):
                     try:
                         index=int(a.value)
@@ -153,9 +177,16 @@ def main(argv):
                         
                     SS.length[index]=len(text)
                     SS.string[index]=Decrypt(text.encode("UTF-16")[2:],SS.length[index],index)
-                SS.write(outFN)
+                try:
+                    SS.write(outFN)
+                except:
+                    countError+=1
+                    print("Output file error!")
                 
-    return True
+    if countError:
+        return countError
+    else:
+        return True
 
 if __name__=="__main__":
     main(sys.argv)

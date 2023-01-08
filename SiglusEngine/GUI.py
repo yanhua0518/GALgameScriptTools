@@ -231,7 +231,10 @@ def running(cmd,key):
                 keyVar.set(keyList[1])
             if lastSelect<4 and typedKey:
                 saveKey(DECRYPT_KEY)
+        elif isinstance(check,int):
+            messagebox.showwarning("Warning","Finish,\nbut error occurred!")
         else:
+            
             messagebox.showerror("Error!","Error!\n"+str(check))
     else:
         messagebox.showwarning("Warning","Input error!")
@@ -499,8 +502,11 @@ class setssDumper:
         def checkName():
             if valueB2.get():
                 name2['text']='Output file:'
+                buttonB3['state']='normal'
             else:
                 name2['text']="Output folder:"
+                valueB3.set(False)
+                buttonB3['state']='disabled'
         def outSelect():
             if valueB2.get():
                 setFile(value2)
@@ -524,23 +530,26 @@ class setssDumper:
         button2.grid(row=3,column=1,padx=2)
         windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
+        valueB.set(True)
         valueB1.set(False)
         valueB2.set(False)
-        valueB3.set(True)
+        valueB3.set(False)
         valueI.set(1)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='w')
         #buttonR=Frame(inputFrame)
         #buttonR.grid(row=7,column=0,padx=2,pady=4,sticky='w')
-        buttonB3=Checkbutton(buttonB,text="Copy text",variable=valueB3)
+        buttonB0=Checkbutton(buttonB,text="Copy text",variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',command=checkName,variable=valueB2)
+        buttonB3=Checkbutton(buttonB,text="Count Words",state='disabled',variable=valueB3)
         buttonR1=Radiobutton(buttonB,text="No dump",variable=valueI,value=0)
         buttonR2=Radiobutton(buttonB,text="Smart dump",variable=valueI,value=1)
         buttonR3=Radiobutton(buttonB,text="Full dump",variable=valueI,value=2)
-        buttonB3.grid(row=0,column=0,sticky='w')
+        buttonB0.grid(row=0,column=0,sticky='w')
         buttonB1.grid(row=0,column=1,sticky='w')
         buttonB2.grid(row=0,column=2,sticky='w')
+        buttonB3.grid(row=0,column=3,sticky='w')
         buttonR1.grid(row=1,column=0,sticky='w')
         buttonR2.grid(row=1,column=1,sticky='w')
         buttonR3.grid(row=1,column=2,sticky='w')
@@ -550,12 +559,14 @@ class setssDumper:
             cmd.append("-a")
         elif valueI.get()==2:
             cmd.append("-w")
-        if valueB3.get():
+        if valueB.get():
             cmd.append("-d")
         if valueB1.get():
             cmd.append("-x")
             if valueB2.get():
                 cmd.append("-s")
+                if valueB3.get():
+                    cmd.append("-c")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.Daemon=True
         runPy.start()

@@ -51,7 +51,7 @@ def main(argv,key):
         f.close()
     except:
         return False
-        
+
     size=os.path.getsize(argv[1])
     scene=open(argv[1],'rb')
     header=Header(scene)
@@ -134,24 +134,26 @@ def main(argv,key):
         SceneDataLength[n]=len(compData)
         ssFile.close()
         
-
-    output=open(outFN,'wb')
-    '''
-    output.write(struct.pack('I',header.length))
-    output.write(header.headerData)
-    output.write(struct.pack('I',header.ExtraKeyUse))
-    output.write(struct.pack('I',header.SourceHeaderLength))
-    '''
-    scene.seek(0)
-    output.write(scene.read(header.SceneInfoOffset))
-    offset=0
-    for n in range(0,header.SceneInfoCount):
-        output.write(struct.pack('2I',offset,SceneDataLength[n]))
-        offset+=SceneDataLength[n]
-    for n in range(0,header.SceneDataCount):
-        output.write(Decrypt2(SceneData[n]))
-    scene.close()
-    output.close()
+    try:
+        output=open(outFN,'wb')
+        '''
+        output.write(struct.pack('I',header.length))
+        output.write(header.headerData)
+        output.write(struct.pack('I',header.ExtraKeyUse))
+        output.write(struct.pack('I',header.SourceHeaderLength))
+        '''
+        scene.seek(0)
+        output.write(scene.read(header.SceneInfoOffset))
+        offset=0
+        for n in range(0,header.SceneInfoCount):
+            output.write(struct.pack('2I',offset,SceneDataLength[n]))
+            offset+=SceneDataLength[n]
+        for n in range(0,header.SceneDataCount):
+            output.write(Decrypt2(SceneData[n]))
+        scene.close()
+        output.close()
+    except Exception as e:
+        return e
     return True
 
 if __name__=="__main__":

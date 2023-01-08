@@ -64,10 +64,12 @@ def main(argv,key):
         outData=b'\x00\x00\x00\x00\x01\x00\x00\x00'+Decrypt4(Decrypt1(compData,key))
     else:
         outData=b'\x00\x00\x00\x00\x00\x00\x00\x00'+Decrypt4(compData)
-
-    output=open(outFN,'wb')
-    output.write(outData)
-    output.close()
+    try:
+        output=open(outFN,'wb')
+        output.write(outData)
+        output.close()
+    except Exception as e:
+        return e
     return True
 
 if __name__=="__main__":
