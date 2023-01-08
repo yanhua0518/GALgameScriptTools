@@ -224,6 +224,9 @@ def main(argv):
                 print("Done!")
         except Exception as e:
             return e
-    return True
+    if countError:
+        return countError
+    else:
+        return True
 if __name__=="__main__":
     main(sys.argv)
