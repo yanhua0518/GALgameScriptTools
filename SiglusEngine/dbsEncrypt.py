@@ -54,11 +54,18 @@ def main(argv):
         elif comp>17:
             comp=17
         argv.remove('-c')
-    else:
+        try:
+            argv.remove('-f')
+        except:
+            pass
+    elif argv.count('-f')>0:
         comp=0
+        argv.remove('-f')
+    else:
+        comp=2
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs.out> [dbs.txt] [-c [2~17]]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <dbs.out> [dbs.txt] [-c [2~17]/-f]")
         return False
     elif len(argv) >2 and argv[2]:
         txtFN=argv[2]

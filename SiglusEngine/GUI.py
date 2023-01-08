@@ -227,16 +227,18 @@ def running(cmd,key):
         startButton['state']='disabled'
     check=eval(code)
     if check:
-        messagebox.showinfo("Notice","Finished!")
-        if lastSelect==0 and check!=True:
-            DECRYPT_KEY=check
-            typedKey=True
-            keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
-            keySelect.current(1)
-            keyVar.set(keyList[1])
-        if lastSelect<4 and typedKey:
-            saveKey(DECRYPT_KEY)
-            
+        if check==True or isinstance(check,list):
+            messagebox.showinfo("Notice","Finished!")
+            if lastSelect==0 and isinstance(check,list):
+                DECRYPT_KEY=check
+                typedKey=True
+                keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
+                keySelect.current(1)
+                keyVar.set(keyList[1])
+            if lastSelect<4 and typedKey:
+                saveKey(DECRYPT_KEY)
+        else:
+            messagebox.showerror("Error!","Error!\n"+str(check))
     else:
         messagebox.showwarning("Warning","Input error!")
     cmdText['state']='disabled'
@@ -376,6 +378,8 @@ class setScenePacker:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
+        else:
+            cmd.append("-f")
         if keySelect.current()==0:
             tempKey=[]
         else:
@@ -464,6 +468,8 @@ class setGameexePacker:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
+        else:
+            cmd.append("-f")
         runPy=threading.Thread(target=running,args=(cmd,DECRYPT_KEY))
         runPy.Daemon=True
         runPy.start()
@@ -606,7 +612,7 @@ class setssPacker:
         if valueB.get():
             cmd.append("-x")
             if valueB1.get():
-                cmd.append("-db")
+                cmd.append("-b")
         if valueB2.get():
             cmd.append("-q")
         runPy=threading.Thread(target=running,args=(cmd,None))
@@ -689,6 +695,8 @@ class setdbsEncrypt:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
+        else:
+            cmd.append("-f")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.Daemon=True
         runPy.start()
@@ -741,6 +749,8 @@ class setdbsBuilder:
         if comp!=0:
             cmd.append("-c")
             cmd.append(str(comp))
+        else:
+            cmd.append("-f")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.Daemon=True
         runPy.start()

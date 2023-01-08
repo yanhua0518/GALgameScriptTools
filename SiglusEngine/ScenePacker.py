@@ -25,11 +25,18 @@ def main(argv,key):
         elif comp>17:
             comp=17
         argv.remove('-c')
-    else:
+        try:
+            argv.remove('-f')
+        except:
+            pass
+    elif argv.count('-f')>0:
         comp=0
+        argv.remove('-f')
+    else:
+        comp=2
         
     if len(argv)<3 or argv[1]=='' or argv[2]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]/-f] [-d]")
         return False
 
     if len(argv)<4 or argv[3]=='':

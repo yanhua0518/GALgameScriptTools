@@ -26,11 +26,18 @@ def main(argv,key):
         elif comp>17:
             comp=17
         argv.remove('-c')
-    else:
+        try:
+            argv.remove('-f')
+        except:
+            pass
+    elif argv.count('-f')>0:
         comp=0
+        argv.remove('-f')
+    else:
+        comp=2
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Gameexe.ini> [Gameexe.dat2] [-p] [-c]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]/-f]")
         return False
 
     if len(argv)<3 or argv[2]=='':

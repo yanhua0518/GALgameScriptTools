@@ -69,7 +69,7 @@ def main(argv):
         singleXlsx=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-a/-w] [-d] [-x [-s]]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> [Text\] [-d] [-a/-w] [-x [-s]]")
         return False
 
     inF=argv[1]+"\\"
@@ -97,8 +97,8 @@ def main(argv):
             else:
                 workSheet=workBook.create_sheet(sheet)
             workSheet.column_dimensions['A'].width=8
-            workSheet.column_dimensions['B'].width=64
-            workSheet.column_dimensions['C'].width=64
+            workSheet.column_dimensions['B'].width=61
+            workSheet.column_dimensions['C'].width=61
             fillColor=openpyxl.styles.PatternFill(fill_type="solid", fgColor="F2F2F2")
             border=openpyxl.styles.Border(top=openpyxl.styles.Side(style='thin',color='D0D7E5'),left=openpyxl.styles.Side(style='thin',color='D0D7E5'),right=openpyxl.styles.Side(style='thin',color='D0D7E5'))
             if name!=sheet:

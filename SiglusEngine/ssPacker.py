@@ -71,9 +71,9 @@ def change(text):
     return temp[::-1]
 
 def main(argv):
-    if argv.count('-db')>0:
+    if argv.count('-b')>0:
         dbLine=True
-        argv.remove('-db')
+        argv.remove('-b')
     else:
         dbLine=False
     if argv.count('-q')>0:
@@ -89,7 +89,7 @@ def main(argv):
         xlsxMode=False
         
     if len(argv)<3 or argv[1]=='' or argv[2]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\] [-x [-db]] [-q]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene\> <Text\> [Scene_packed\] [-x [-b]] [-q]")
         return False
 
     inF=argv[1]+"\\"

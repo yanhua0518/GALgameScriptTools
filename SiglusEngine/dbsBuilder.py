@@ -62,11 +62,18 @@ def main(argv):
         elif comp>17:
             comp=17
         argv.remove('-c')
-    else:
+        try:
+            argv.remove('-f')
+        except:
+            pass
+    elif argv.count('-f')>0:
         comp=0
+        argv.remove('-f')
+    else:
+        comp=2
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <xlsx folder\> [output folder\] [-c [2~17]] [-u]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <xlsx folder\> [output folder\] [-u] [-c [2~17]/-f]")
         return False
 
     inF=argv[1]+'\\'
