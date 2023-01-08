@@ -40,28 +40,3 @@ dbsBuilder封装建议一定要加-u命令封装为Unicode编码。ANSI编码仅
 又加了点没什么用的功能。  
 给Scene的解包封包增加了自动从Scene中搜索Key的功能，
 稳定性未知，不过只要不是脸太黑就不需要再用skf搜索Key了。  
-***
-## Usage:
-```
-SceneUnpacker.py <Scene.pck> [Scene\]/[-f]
-ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]]
-
-GameexeUnpacker.py <Gameexe.dat> [Gameexe.ini]
-GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]]
-
-ssDumper.py <Scene\> [text\] [-a/-w] [-d] [-x [-s]]
-ssPacker.py <Scene\> <text\> [output\] [-x [-db]] [-q]
-
-dbsDecrypt.py <dbs file> [-a/-x]
-dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]]
-dbsBuilder.py <xlsx folder\> [dbs folder\] [-u] [-c [2~17]]
-
-pckUnpacker.py <pck file> [output folder\]
-pckPacker.py <data folder\> [output file]
-
-omvCuter.py <omv file> [output file]
-
-siglusomv.exe <ogv file(must be YUV444p)> <omv file>
-
-skf.exe (Just run it and start the game)
-```
