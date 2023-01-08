@@ -3,7 +3,7 @@
 ## Command line Usage:
 ```
 SceneUnpacker.py <Scene.pck> [Scene\] [-n] [-d] / [-f]
- -n Export ss without decompress
+ -n Export ss without decompression
  -d Use default key
  -f Find key only
 
