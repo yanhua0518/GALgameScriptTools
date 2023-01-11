@@ -216,7 +216,7 @@ def running(cmd,key):
     else:
         code=cmd[0]+".main(cmd,key)"
     cmdText['state']='normal'
-    print('Running "'+str(cmd)+'"...')
+    print('Running '+str(cmd)+' ...')
     if singleProcess:
         startButton['state']='disabled'
     check=eval(code)

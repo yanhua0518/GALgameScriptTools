@@ -53,6 +53,8 @@ def main(argv):
             coding="GBK"
         else:
             argv.pop(argv.index('-e')+1)
+        if coding.lower().find('utf')>-1:
+            coding="GBK"
         argv.remove('-e')
     else:
         isUTF=True
