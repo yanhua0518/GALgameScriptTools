@@ -24,7 +24,7 @@ Compression Level为压缩等级，范围2-17，实际使用中速度差别不�
 Copy text：复制文本到译文行。  
 Export as xlsx：导出为Excel文件。  
 Use single xlsx：将所有文本导出到一个Excel文件中。  
-Count words：导出为单个Excel文件时，添加一个字数统计表格。
+Count words：导出为单个Excel文件时，添加一个字数统计表格。  
 No filter：不过滤任何文本。  
 Smart filter：只过滤掉纯英文的行。  
 Filter all：过滤掉所有包含英文的行。  
