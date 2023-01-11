@@ -31,25 +31,31 @@ class Header:
         H.lineDataIndexOffset=H.headerList[4]
         H.textOffset=H.headerList[5]
 '''
-def Transcode(uni):
+def Transcode(uni,coding):
     tran=''
     for ch in uni:
         try:
-            ch.encode("GBK")
+            ch.encode(coding)
         except:
-            tran+=u"·"
+            tran+="."
         else:
             tran+=ch
-    return tran.encode("GBK")
+    return tran.encode(coding)
 
 
 def main(argv):
-    if argv.count('-u')>0:
-        isUTF=True
-        argv.remove('-u')
-    else:
+    if argv.count('-e')>0:
         isUTF=False
-    
+        try:
+            coding=str(argv[argv.index('-e')+1])
+            'abc'.encode(coding)
+        except:
+            coding="GBK"
+        else:
+            argv.pop(argv.index('-e')+1)
+        argv.remove('-e')
+    else:
+        isUTF=True
     if argv.count('-c')>0:
         try:
             comp=int(argv[argv.index('-c')+1])
@@ -73,7 +79,7 @@ def main(argv):
         comp=2
 
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <xlsx folder\> [output folder\] [-u] [-c [2~17]/-f]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <xlsx folder\> [output folder\] [-e [text coding]] [-c [2~17]/-f]")
         return False
 
     inF=argv[1]+'\\'
@@ -180,7 +186,7 @@ def main(argv):
                     if isUTF:
                         tempString=lineData[m][n].encode("UTF-16")[2:]+b'\x00\x00'
                     else:
-                        tempString=Transcode(lineData[m][n])+b'\x00'
+                        tempString=Transcode(lineData[m][n],coding)+b'\x00'
                     dbs.write(struct.pack('I',textOffset))
                     textData+=tempString
                     textOffset+=len(tempString)

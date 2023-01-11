@@ -83,8 +83,8 @@ def start():
         check=option.run()
     except ZeroDivisionError:
         messagebox.showerror("Error!","Can't find key from Gameexe!")
-    except:
-        messagebox.showerror("Error!","Error!\nKey is wrong?")
+    except Exception as e:
+        messagebox.showerror("Error!","Error!\nKey is wrong?\n"+str(e))
 
 class findKey(threading.Thread):
     def __init__(self):
@@ -216,7 +216,7 @@ def running(cmd,key):
     else:
         code=cmd[0]+".main(cmd,key)"
     cmdText['state']='normal'
-    print('Running "'+cmd[0]+'"...')
+    print('Running "'+str(cmd)+'"...')
     if singleProcess:
         startButton['state']='disabled'
     check=eval(code)
@@ -234,7 +234,6 @@ def running(cmd,key):
         elif isinstance(check,int):
             messagebox.showwarning("Warning","Finish,\nbut error occurred!")
         else:
-            
             messagebox.showerror("Error!","Error!\n"+str(check))
     else:
         messagebox.showwarning("Warning","Input error!")
@@ -543,9 +542,9 @@ class setssDumper:
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',command=checkName,variable=valueB2)
         buttonB3=Checkbutton(buttonB,text="Count Words",state='disabled',variable=valueB3)
-        buttonR1=Radiobutton(buttonB,text="No dump",variable=valueI,value=0)
-        buttonR2=Radiobutton(buttonB,text="Smart dump",variable=valueI,value=1)
-        buttonR3=Radiobutton(buttonB,text="Full dump",variable=valueI,value=2)
+        buttonR1=Radiobutton(buttonB,text="No filter",variable=valueI,value=0)
+        buttonR2=Radiobutton(buttonB,text="Smart filter",variable=valueI,value=1)
+        buttonR3=Radiobutton(buttonB,text="Filter all",variable=valueI,value=2)
         buttonB0.grid(row=0,column=0,sticky='w')
         buttonB1.grid(row=0,column=1,sticky='w')
         buttonB2.grid(row=0,column=2,sticky='w')
@@ -718,6 +717,11 @@ class setdbsEncrypt:
 
 class setdbsBuilder:
     def __init__(self):
+        def checkANSI():
+            if valueB.get():
+                buttonB3['state']='disabled'
+            else:
+                buttonB3['state']='normal'
         clear()
         name1=Label(inputFrame,text="Xlsx folder:")
         name2=Label(inputFrame,text="Dbs folder:")
@@ -736,12 +740,16 @@ class setdbsBuilder:
         windnd.hook_dropfiles(entry1,dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
         valueB.set(True)
+        value3.set("GBK")
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='e')
-        buttonB1=Radiobutton(buttonB,text="ANSI(GBK)",variable=valueB,value=False)
-        buttonB2=Radiobutton(buttonB,text="Unicode",variable=valueB,value=True)
+        buttonB1=Radiobutton(buttonB,text="Unicode",command=checkANSI,variable=valueB,value=True)
+        buttonB2=Radiobutton(buttonB,text="ANSI",command=checkANSI,variable=valueB,value=False)
+        buttonB3=Combobox(buttonB,state='disabled',width=8,textvariable=value3,value=["GBK","Shift-JIS","Big5","Korean"])
+        buttonB3.current(0)
         buttonB1.grid(row=8,column=1,sticky='w')
         buttonB2.grid(row=8,column=2,sticky='w')
+        buttonB3.grid(row=8,column=3,padx=8,sticky='e')
         valueC.set('17')
         nameC=Label(inputFrame,text="Compression Level(2-17, 0 for Fake Compression): ")
         nameC.grid(row=7,padx=2,pady=4,sticky='e')
@@ -749,8 +757,10 @@ class setdbsBuilder:
         entryC.grid(row=7,column=1,padx=2,pady=4)
     def run(self):
         cmd=["dbsBuilder",getValue(value1),getValue(value2)]
-        if valueB.get():
-            cmd.append("-u")
+        if not valueB.get():
+            cmd.append("-e")
+            if getValue(value3):
+                cmd.append(getValue(value3))
         try:
             comp=int(valueC.get())
         except:
