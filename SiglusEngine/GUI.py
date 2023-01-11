@@ -219,24 +219,28 @@ def running(cmd,key):
     print('Running '+str(cmd)+' ...')
     if singleProcess:
         startButton['state']='disabled'
-    check=eval(code)
-    if check:
-        if check==True or isinstance(check,list):
-            messagebox.showinfo("Notice","Finished!")
-            if lastSelect==0 and isinstance(check,list):
-                DECRYPT_KEY=check
-                typedKey=True
-                keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
-                keySelect.current(1)
-                keyVar.set(keyList[1])
-            if lastSelect<4 and typedKey:
-                saveKey(DECRYPT_KEY)
-        elif isinstance(check,int):
-            messagebox.showwarning("Warning","Finish,\nbut error occurred!")
-        else:
-            messagebox.showerror("Error!","Error!\n"+str(check))
+    try:
+        check=eval(code)
+    except Exception as e:
+        messagebox.showerror("Error!","Error!\n"+str(e))
     else:
-        messagebox.showwarning("Warning","Input error!")
+        if check:
+            if check==True or isinstance(check,list):
+                messagebox.showinfo("Notice","Finished!")
+                if lastSelect==0 and isinstance(check,list):
+                    DECRYPT_KEY=check
+                    typedKey=True
+                    keyList[1]=SceneUnpacker.stringKey(DECRYPT_KEY)
+                    keySelect.current(1)
+                    keyVar.set(keyList[1])
+                if lastSelect<4 and typedKey:
+                    saveKey(DECRYPT_KEY)
+            elif isinstance(check,int):
+                messagebox.showwarning("Warning","Finish,\nbut error occurred!")
+            else:
+                messagebox.showerror("Error!","Error!\n"+str(check))
+        else:
+            messagebox.showwarning("Warning","Input error!")
     cmdText['state']='disabled'
     startButton['state']='normal'
 
