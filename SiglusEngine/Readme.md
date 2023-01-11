@@ -42,6 +42,7 @@ Export as xlsx：导出所有数据到Excel文件，表格格式兼容官方CSV2
 从文本文档导入数据回dbs文件。  
 ### Create dbs
 将Excel文件转为dbs文件。推荐使用Unicode编码，但部分特殊文件可能无法识别。  
+选择ANSI时可在下拉列表选择编码，也可以手动输入，如输入错误或留空将使用GBK编码。  
 ### Unpack pck / Pack pck
 解包、封包手机版专用的pck文件。  
 ### Cut OMV header
@@ -90,8 +91,8 @@ dbsEncrypt.py <dbs.out> [dbs.txt] [-c [2~17]/-f]
  -c 2~17 Compression level (Default level 2, level 17 if only input -c)
  -f Do fake compression
  
-dbsBuilder.py <xlsx folder\> [dbs folder\] [-u] [-c [2~17]/-f]
- -u Encrypt dbs file with Unicode (Default is GBK)
+dbsBuilder.py <xlsx folder\> [dbs folder\] [-e [text coding]] [-c [2~17]/-f]
+ -e Encrypt dbs file with typed text coding (Default is unicode, use GBK if only input -e)
  -c 2~17 Compression level (Default level 2, level 17 if only input -c)
  -f Do fake compression
 
