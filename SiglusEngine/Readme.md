@@ -51,7 +51,7 @@
 删除`OMV`文件的文件头，转为`ogv`视频文件。  
 - 有透明度的OMV视频无法用普通播放器正常播放。  
 ### Pack OMV
-将`ogv`视频转换为OMV文件。`ogv`视频必须是`yuv444p`格式。
+将`ogv`视频转换为`OMV`文件。`ogv`视频必须是`yuv444p`格式。
 - 未找到`siglusomv.exe`时不会出现。    
 ***
 # SiglusEngie Tools
