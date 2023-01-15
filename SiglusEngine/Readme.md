@@ -66,7 +66,7 @@ Search secret keys from memory when the game is running. To use this function, c
 - Found secret keys will be saved in `Last use`.
 ### Unpack Scene
 Unpack the `Scene.pck` file.
-- Click click the `start` button with the `Find key only` box ticked to search for the secret key and save it in `Last use` only without unpacking the scene files.
+- Click the `start` button with the `Find key only` box ticked to search for the secret key and save it in `Last use` only without unpacking the scene files.
 ### Pack Scene
 Pack the `ss` file into `Scene.pck`.
 - The `Compression Level` ranges from 2 to 17, 17 is recommended. Specially, Set the `Compression Level` 0 to use pseudo-compression (compressed files will be larger than original ones).
