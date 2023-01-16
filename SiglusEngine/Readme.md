@@ -28,8 +28,8 @@
 - Count words：导出为单个`xlsx`文件时，添加一个字数统计表格。
 #### 过滤选项  
 - No filter：不过滤任何文本。  
-- Smart filter：只过滤掉纯英文的行。  
-- Filter all：过滤掉所有包含英文的行。  
+- Smart filter：只过滤掉只有半角字符的行。  
+- Filter all：过滤掉所有包含半角字符的行。  
 ### Pack ss
 将译文导入回ss文件中。  
 - Have Excel text：从`xlsx`文件导入时需勾选此项。无论是否勾选都查找`txt`文档进行导入，两种文件都有时，`xlsx`文档导入后会覆盖`txt`文档导入的内容。  
@@ -83,8 +83,8 @@ Export texts from `ss` file. The following are optional functions.
 - Count words: Add a word counting sheet while exporting as a single `xlsx` file. Must use `Use single xlsx`.
 #### Filter option:
 - No filter: Do not filter any text.
-- Smart filter: Filter out lines only consisting English.
-- Full filter: Fillter out lines containing any English.
+- Smart filter: Filter out lines only consisting half-width characters.
+- Full filter: Fillter out lines containing any half-width characters.
 ### Pack ss
 Import the translated texts back into the `ss` file. The following are optional functions.
 - Have Excel text: Tick this when importing from `xlsx` files. `txt` files will always be used regardless of using this or not. When both `txt` and `xlsx` files are found, the program will use the `xlsx` files.
