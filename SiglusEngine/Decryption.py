@@ -5,6 +5,7 @@ import sys
 import os
 from ctypes import *
 import struct
+from tkinter import messagebox
 
 DEFAULT_KEY=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 '''
@@ -83,5 +84,6 @@ try:
     dll=CDLL(os.getcwd()+'\\Decryption.dll')
 except:
     print("Can't open Decryption.dll")
+    messagebox.showerror("Error!","Decryption.dll not found!")
     quit()
 
