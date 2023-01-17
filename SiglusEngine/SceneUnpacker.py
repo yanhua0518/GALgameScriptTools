@@ -81,7 +81,7 @@ def main(argv,key):
         dftKey=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\] 「-n] [-d] / [-f]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\] [-n] [-d] / [-f]")
         return False
 
     if not keyOnly:
