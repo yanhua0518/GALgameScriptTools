@@ -537,18 +537,18 @@ class setssDumper:
         valueB1.set(False)
         valueB2.set(False)
         valueB3.set(False)
+        valueB4.set(False)
         valueI.set(1)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='w')
-        #buttonR=Frame(inputFrame)
-        #buttonR.grid(row=7,column=0,padx=2,pady=4,sticky='w')
         buttonB0=Checkbutton(buttonB,text="Copy text",variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Export as xlsx",command=checkEnable,variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Use single xlsx",state='disabled',command=checkName,variable=valueB2)
-        buttonB3=Checkbutton(buttonB,text="Count Words",state='disabled',variable=valueB3)
+        buttonB3=Checkbutton(buttonB,text="Count words",state='disabled',variable=valueB3)
         buttonR1=Radiobutton(buttonB,text="No filter",variable=valueI,value=0)
         buttonR2=Radiobutton(buttonB,text="Smart filter",variable=valueI,value=1)
         buttonR3=Radiobutton(buttonB,text="Filter all",variable=valueI,value=2)
+        buttonB4=Checkbutton(buttonB,text="Special mode",variable=valueB4)
         buttonB0.grid(row=0,column=0,sticky='w')
         buttonB1.grid(row=0,column=1,sticky='w')
         buttonB2.grid(row=0,column=2,sticky='w')
@@ -556,6 +556,7 @@ class setssDumper:
         buttonR1.grid(row=1,column=0,sticky='w')
         buttonR2.grid(row=1,column=1,sticky='w')
         buttonR3.grid(row=1,column=2,sticky='w')
+        buttonB4.grid(row=1,column=3,sticky='e')
     def run(self):
         cmd=["ssDumper",getValue(value1),getValue(value2)]
         if valueI.get()==0:
@@ -570,6 +571,8 @@ class setssDumper:
                 cmd.append("-s")
                 if valueB3.get():
                     cmd.append("-c")
+        if valueB4.get():
+            cmd.append("-o")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.Daemon=True
         runPy.start()
@@ -943,6 +946,7 @@ valueB=BooleanVar()
 valueB1=BooleanVar()
 valueB2=BooleanVar()
 valueB3=BooleanVar()
+valueB4=BooleanVar()
 valueI=IntVar()
 valueC=StringVar()
 
