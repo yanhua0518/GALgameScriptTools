@@ -152,60 +152,62 @@ def main(argv):
                 except:
                     print("Input file error!")
                     countError+=1
+                    continue
             except:
                 print("Input file error!")
                 countError+=1
-            else:
-                isNote=False
-                for i,line in enumerate(lines):
-                    isText=0
-                    isAt=False
-                    start=0
-                    for n,char in enumerate(line):
-                        if char=='/':
-                            if isNote:
-                                if line[n-1:n]=='*':
-                                    isNote=False
-                            else:
-                                if line[n+1:n+2]=='*':
-                                    isNote=True
-                                elif line[n+1:n+2]=='/':
-                                    break
-                        if isNote or (isText==2 and char!='"'):
-                            continue
-                        if char=='#' or char==';':
-                            break
-                        if char=='\t' or char=='\n':
+                continue
+            isNote=False
+            for i,line in enumerate(lines):
+                isText=0
+                isAt=False
+                start=0
+                for n,char in enumerate(line):
+                    if char=='/':
+                        if isNote:
+                            if line[n-1:n]=='*':
+                                isNote=False
+                        else:
+                            if line[n+1:n+2]=='*':
+                                isNote=True
+                            elif line[n+1:n+2]=='/' and isText!=2:
+                                break
+                    if isNote or (isText==2 and char!='"'):
+                        continue
+                    if char=='#' or char==';':
+                        break
+                    if char=='\t' or char=='\n':
+                        isAt=False
+                        continue
+                    if char=='@' and line[n+1:n+5]!='ruby':
+                        isAt=True
+                    if isAt:
+                        if char==' ' or char==',' or char=='(' or char==')' or char=='【' or char=='「':
                             isAt=False
-                            continue
-                        if char=='@' and line[n+1:n+5]!='ruby':
-                            isAt=True
-                        if isAt:
-                            if char==' ' or char==',' or char=='(' or char==')' or char=='【' or char=='「':
-                                isAt=False
-                        if char=='"':
-                            if isText==2:
-                                isText=0
+                    if char=='"':
+                        if isText==2:
+                            isText=0
+                            if line[start:n]!='':
                                 indexs.append(softIndex(i,start,n-1))
                                 texts.append(line[start:n])
-                            else:
-                                if isText==1:
-                                    indexs.append(softIndex(i,start,n-1))
-                                    texts.append(line[start:n])
-                                isText=2
-                                start=n+1
-                        elif unicodedata.east_asian_width(char)!='Na':
-                            if not isText and not isAt:
-                                isText=1
-                                start=n
-                        elif isText==1:
-                            isText=0
-                            indexs.append(softIndex(i,start,n-1))
-                            texts.append(line[start:n])
-                    if isText:
+                        else:
+                            if isText==1:
+                                indexs.append(softIndex(i,start,n-1))
+                                texts.append(line[start:n])
+                            isText=2
+                            start=n+1
+                    elif unicodedata.east_asian_width(char)!='Na':
+                        if not isText and not isAt:
+                            isText=1
+                            start=n
+                    elif isText==1:
                         isText=0
-                        indexs.append(softIndex(i,start,n))
-                        texts.append(line[start:-1])   
+                        indexs.append(softIndex(i,start,n-1))
+                        texts.append(line[start:n])
+                if isText:
+                    isText=0
+                    indexs.append(softIndex(i,start,n))
+                    texts.append(line[start:-1])   
         else:
             try:
                 file=open(inFN,'rb')
