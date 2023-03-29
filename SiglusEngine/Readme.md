@@ -26,6 +26,7 @@
 - Export as xlsx：导出为`xlsx`文件。  
 - Use single xlsx：将所有文本导出到一个`xlsx`文件中。  
 - Count words：导出为单个`xlsx`文件时，添加一个字数统计表格。
+- Special mode：从某种特殊格式的`ss`文件中导出。  
 #### 过滤选项  
 - No filter：不过滤任何文本。  
 - Smart filter：只过滤掉只有半角字符的行。  
@@ -35,6 +36,7 @@
 - Have Excel text：从`xlsx`文件导入时需勾选此项。无论是否勾选都查找`txt`文档进行导入，两种文件都有时，`xlsx`文档导入后会覆盖`txt`文档导入的内容。  
 - Bilingual display：双语显示。仅导入`xlsx`文件时可选，仅手机版可以生效双行显示。  
 - Change quotation marks：把对话的日文引号替换为中文习惯。  
+- Special mode：导入某种特殊格式的`ss`文件。  
 ### Dump dbs
 导出`dbs`文件中的数据。  
 - Export all data：不进行内容过滤。  
@@ -81,6 +83,7 @@ Export texts from `ss` file. The following are optional functions.
 - Export as xlsx: Export as `xlsx` files.
 - Use single xlsx: Export all the texts to one single `xlsx` file. Must use `Export as xlsx`.
 - Count words: Add a word counting sheet while exporting as a single `xlsx` file. Must use `Use single xlsx`.
+- Special mode: for special `ss` files.
 #### Filter option:
 - No filter: Do not filter any text.
 - Smart filter: Filter out lines only consisting half-width characters.
@@ -90,6 +93,7 @@ Import the translated texts back into the `ss` file. The following are optional 
 - Have Excel text: Tick this when importing from `xlsx` files. `txt` files will always be used regardless of using this or not. When both `txt` and `xlsx` files are found, the program will use the `xlsx` files.
 - Bilingual display: Double language display. It is available with mobile version. The text should be imported from `xlsx` files.
 - Change quotation marks: Replace the Japanese quotation marks in the dialogue with the Chinese quatation marks.
+- Special mode: for special `ss` files.
 ### Dump dbs
 Export data from `dbs` file. The following are optional functions.
 - Export all data: Export all data without filter.
@@ -128,7 +132,8 @@ GameexePacker.py <Gameexe.ini> [Gameexe.dat2] [-p] [-c [2~17]/-f]
  -f Do fake compression
  -p Double encryption
 
-ssDumper.py <Scene\> [text\] [-d] [-a/-w] [-x [-s [-c]]]
+ssDumper.py <Scene\> [text\] [-o] [-d] [-a/-w] [-x [-s [-c]]]
+ -o Special mode
  -d Copy text to translation line
  -a Export all text without dump
  -w Dump all text with half-width characters
@@ -136,7 +141,8 @@ ssDumper.py <Scene\> [text\] [-d] [-a/-w] [-x [-s [-c]]]
  -s Save all text in one xlsx file
  -c Add a statistics sheet in single xlsx
 
-ssPacker.py <Scene\> <text\> [output\] [-x [-b]] [-q]
+ssPacker.py <Scene\> <text\> [output\] [o] [-x [-b]] [-q]
+ -o Special mode
  -x Import from xlsx file (Always import from txt files first)
  -b Import both orignal text and translated text (Bilingual display only effect in mobile version)
  -q Change quotation marks from Japanese custom to Chinese custom
