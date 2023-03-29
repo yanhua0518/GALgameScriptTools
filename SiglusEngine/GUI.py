@@ -619,14 +619,17 @@ class setssPacker:
         valueB.set(True)
         valueB1.set(False)
         valueB2.set(False)
+        valueB4.set(False)
         buttonB=Frame(inputFrame)
         buttonB.grid(row=8,padx=2,pady=4,sticky='w')
         buttonB0=Checkbutton(buttonB,text="Have Excel text",command=checkEnable,variable=valueB)
         buttonB1=Checkbutton(buttonB,text="Bilingual display (For mobile only)",variable=valueB1)
         buttonB2=Checkbutton(buttonB,text="Change quotation marks",variable=valueB2)
+        buttonB3=Checkbutton(buttonB,text="Special mode",variable=valueB4)
         buttonB0.grid(row=0,column=0,sticky='w')
         buttonB1.grid(row=0,column=1,sticky='w')
-        buttonB2.grid(row=1,column=0,sticky='e')
+        buttonB2.grid(row=1,column=0,sticky='w')
+        buttonB3.grid(row=1,column=1,sticky='e')
     def run(self):
         cmd=["ssPacker",getValue(value1),getValue(value2),getValue(value3)]
         if valueB.get():
@@ -635,6 +638,8 @@ class setssPacker:
                 cmd.append("-b")
         if valueB2.get():
             cmd.append("-q")
+        if valueB4.get():
+            cmd.append("-o")
         runPy=threading.Thread(target=running,args=(cmd,None))
         runPy.Daemon=True
         runPy.start()

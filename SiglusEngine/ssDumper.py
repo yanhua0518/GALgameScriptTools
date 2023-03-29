@@ -206,7 +206,7 @@ def main(argv):
                         texts.append(line[start:n])
                 if isText:
                     isText=0
-                    indexs.append(softIndex(i,start,n))
+                    indexs.append(softIndex(i,start,n-1))
                     texts.append(line[start:-1])   
         else:
             try:
