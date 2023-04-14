@@ -141,7 +141,7 @@ ssDumper.py <Scene\> [text\] [-o] [-d] [-a/-w] [-x [-s [-c]]]
  -s Save all text in one xlsx file
  -c Add a statistics sheet in single xlsx
 
-ssPacker.py <Scene\> <text\> [output\] [o] [-x [-b]] [-q]
+ssPacker.py <Scene\> <text\> [output\] [-o] [-x [-b]] [-q]
  -o Special mode
  -x Import from xlsx file (Always import from txt files first)
  -b Import both orignal text and translated text (Bilingual display only effect in mobile version)
