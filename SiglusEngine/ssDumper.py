@@ -161,6 +161,7 @@ def main(argv):
             for i,line in enumerate(lines):
                 isText=0
                 isAt=False
+                isName=False
                 start=0
                 for n,char in enumerate(line):
                     if char=='/':
@@ -199,7 +200,18 @@ def main(argv):
                     elif unicodedata.east_asian_width(char)!='Na':
                         if not isText and not isAt:
                             isText=1
-                            start=n
+                            if char=='【':
+                                start=n+1
+                                isName=True
+                            else:
+                                isText=1
+                                start=n
+                                isName=False
+                        elif isText==1 and not isAt and isName and char=='】':
+                            isName=False
+                            isText=0
+                            indexs.append(softIndex(i,start,n-1))
+                            texts.append(line[start:n])
                     elif isText==1:
                         isText=0
                         indexs.append(softIndex(i,start,n-1))
