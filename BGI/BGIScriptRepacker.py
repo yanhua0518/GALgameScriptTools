@@ -22,7 +22,7 @@ def transcode(uni):
 
 if len(sys.argv) < 2:
     print ("error\n")
-    print (sys.argv[0]+" <script\> <txt\> <script_cn\>")
+    print (sys.argv[0]+r" <script\> <txt\> <script_cn\>")
     quit()
 
 SC=sys.argv[1]

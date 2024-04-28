@@ -9,7 +9,7 @@ import unicodedata
 
 if len(sys.argv) < 2:
     print ("error\n")
-    print (sys.argv[0]+" <script\>")
+    print (sys.argv[0]+" <script>")
     quit()
 
 SC=sys.argv[1]
