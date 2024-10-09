@@ -283,14 +283,38 @@ class setSceneUnpacker:
                 name2['state']='disabled'
                 entry2['state']='disabled'
                 button2['state']='disabled'
+                valueB1.set(False)
+                buttonB1['state']='disabled'
                 keySelect['state']='disabled'
                 keyEntry['state']='disabled'
             else:
                 name2['state']='normal'
                 entry2['state']='normal'
                 button2['state']='normal'
+                buttonB1['state']='normal'
                 keySelect['state']='readonly'
                 keyEntry['state']='normal'
+        def checkRemove():
+            if valueB1.get():
+                name2['text']='Output file:'
+                name2['state']='disabled'
+                value2.set(value1.get()+'.new')
+                entry2['state']='disabled'
+                button2['state']='disabled'
+                valueB.set(False)
+                buttonB0['state']='disabled'
+                keySelect['state']='disabled'
+                keyEntry['state']='disabled'
+            else:
+                name2['text']='Output folder:'
+                name2['state']='normal'
+                value2.set(value2.get().replace(".pck",'').replace(".new",''))
+                entry2['state']='normal'
+                button2['state']='normal'
+                buttonB0['state']='normal'
+                keySelect['state']='readonly'
+                keyEntry['state']='normal'
+                
                 
         clear()
         name1=Label(inputFrame,text="Scene file:")
@@ -308,14 +332,21 @@ class setSceneUnpacker:
         button1.grid(row=1,column=1,padx=2)
         button2.grid(row=3,column=1,padx=2)
         valueB.set(False)
-        buttonB=Checkbutton(inputFrame,text="Find key only",command=checkFind,variable=valueB)
-        buttonB.grid(row=4,padx=2,pady=4,sticky='e')
+        valueB1.set(False)
+        buttonB=Frame(inputFrame)
+        buttonB.grid(row=6,column=0,padx=2,pady=4,sticky='e')
+        buttonB0=Checkbutton(buttonB,text="Find key only",command=checkFind,variable=valueB)
+        buttonB1=Checkbutton(buttonB,text="Remove unused data",command=checkRemove,variable=valueB1)
+        buttonB0.grid(row=0,column=2,sticky='e')
+        buttonB1.grid(row=0,column=0,sticky='w')
         windnd.hook_dropfiles(entry1,self.dropValue1)
         windnd.hook_dropfiles(entry2,dropValue2)
     def run(self):
         cmd=["SceneUnpacker",getValue(value1)]
         if valueB.get():
             cmd.append("-f")
+        elif valueB1.get():
+            cmd.append("-x")
         else:
             cmd.append(getValue(value2))
         if keySelect.current()==0 or valueB.get():

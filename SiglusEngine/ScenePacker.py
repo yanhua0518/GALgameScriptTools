@@ -7,6 +7,27 @@ import struct
 from Decryption import Decrypt1,Decrypt2,FakeCompress,Compress
 from SceneUnpacker import Header,stringKey,searchKey
 
+def sourceRemove(file):
+    try:
+        scene=open(file,'rb')
+        header=Header(scene)
+        scene.seek(header.SceneInfoOffset)
+        SceneDataLength=[]
+        for n in range(0,header.SceneInfoCount):
+            SceneDataLength.append(struct.unpack('2I',scene.read(8))[1])
+        size=header.SceneDataOffset+sum(SceneDataLength)
+        output=open(file+'.new','wb')
+        scene.seek(0)
+        output.write(scene.read(size))
+        output.write(b'\x00')
+        output.seek(88)
+        output.write(b'\x01\x00\x00\x00')
+        scene.close()
+        output.close()
+    except Exception as e:
+        return e
+    return True
+
 def main(argv,key):
     if argv.count('-d')>0:
         dftKey=True
@@ -151,6 +172,10 @@ def main(argv,key):
         for n in range(0,header.SceneDataCount):
             output.write(Decrypt2(SceneData[n]))
         scene.close()
+        output.write(b'\00')
+        output.seek(88)
+        output.write(b'\x01\x00\x00\x00')
+        
         output.close()
     except Exception as e:
         return e

@@ -25,6 +25,27 @@ class Header:
         H.ExtraKeyUse=struct.unpack('I',f.read(4))[0]
         H.SourceHeaderLength=struct.unpack('I',f.read(4))[0]
 
+def sourceRemove(file):
+    try:
+        scene=open(file,'rb')
+        header=Header(scene)
+        scene.seek(header.SceneInfoOffset)
+        SceneDataLength=[]
+        for n in range(0,header.SceneInfoCount):
+            SceneDataLength.append(struct.unpack('2I',scene.read(8))[1])
+        size=header.SceneDataOffset+sum(SceneDataLength)
+        output=open(file+'.new','wb')
+        scene.seek(0)
+        output.write(scene.read(size))
+        output.write(b'\x00')
+        output.seek(88)
+        output.write(b'\x01\x00\x00\x00')
+        scene.close()
+        output.close()
+    except Exception as e:
+        return e
+    return True
+
 def stringKey(key):
     keyHex=[]
     for byte in key:
@@ -74,6 +95,9 @@ def main(argv,key):
         argv.remove('-f')
     else:
         keyOnly=False
+    if argv.count('-x')>0:
+        removeS=True
+        argv.remove('-x')
     if argv.count('-d')>0:
         dftKey=True
         argv.remove('-d')
@@ -81,7 +105,7 @@ def main(argv,key):
         dftKey=False
     
     if len(argv)<2 or argv[1]=='':
-        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\] [-n] [-d] / [-f]")
+        print ("Usage: "+argv[0][argv[0].rfind("\\")+1:]+" <Scene.pck> [Scene\] [-n] [-d] / [-f] / [-x]")
         return False
 
     if not keyOnly:
@@ -100,9 +124,13 @@ def main(argv,key):
         return False
     countError=0
     size=os.path.getsize(argv[1])
+
+    if removeS:
+        return sourceRemove(argv[1])
+    
     scene=open(argv[1],'rb')
     header=Header(scene)
-
+    
     scene.seek(header.SceneNameIndexOffset)
     SceneNameOffset=[]
     SceneNameLength=[]

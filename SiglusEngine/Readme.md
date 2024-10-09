@@ -115,10 +115,11 @@ Convert `ogv` video to `OMV` file. `ogv` video must be in `yuv444p` format.
 ***
 ## Command line Usage:
 ```
-SceneUnpacker.py <Scene.pck> [Scene\] [-n] [-d] / [-f]
+SceneUnpacker.py <Scene.pck> [Scene\] [-n] [-d] / [-f] / [-x]
  -n Export ss without decompression
  -d Use default key
  -f Find key only
+ -x Remove original source
 
 ScenePacker.py <Scene.pck> <Scene\> [Scene.pck2] [-c [2~17]/-f] [-d]
  -c 2~17 Compression level (Default level 2, level 17 if only input -c)
